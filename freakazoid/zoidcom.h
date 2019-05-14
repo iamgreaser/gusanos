@@ -16,8 +16,11 @@ typedef float zFloat;
 
 typedef int32_t ZCom_ClassID;
 typedef int32_t ZCom_ConnID;
+typedef int32_t ZCom_FileTransID;
 typedef int32_t ZCom_InterceptID;
 typedef int32_t ZCom_NodeID;
+
+#define ZCOM_FTRANS_ID_BITS 32
 
 constexpr int32_t ZCom_Invalid_ID = 0;
 
@@ -62,6 +65,9 @@ typedef enum eZCom_Event_enum
 	eZCom_EventInit,
 	eZCom_EventRemoved,
 	eZCom_EventUser,
+	eZCom_EventFile_Incoming,
+	eZCom_EventFile_Data,
+	eZCom_EventFile_Complete,
 } eZCom_Event;
 
 typedef enum eZCom_NodeRole_enum
@@ -146,9 +152,19 @@ public:
 	void ZCom_simulateLoss(int unk001, float loss); // For the record, this game is older than Loss. --GM
 };
 
+class ZCom_FileTransInfo
+{
+public:
+	std::string path;
+	float bps;
+	size_t transferred;
+	size_t size;
+};
+
 class ZCom_Node
 {
 public:
+	void acceptFile(ZCom_ConnID connID, ZCom_FileTransID fileTransID, int unk003, bool actuallyAccept);
 	void addReplicationFloat(zFloat* data, int unk002, zU32 flags, zU8 rules);
 	void addReplicationInt(zS32* data, int bits, bool unk003, zU32 flags, zU8 rules);
 	void addReplicationInt(zS32* data, int bits, bool unk003, zU32 flags, zU8 rules, zU32 unk006);
@@ -157,14 +173,17 @@ public:
 	void beginReplicationSetup(int unk001);
 	bool checkEventWaiting(void);
 	void endReplicationSetup(void);
+	ZCom_FileTransInfo getFileInfo(ZCom_ConnID connID, ZCom_FileTransID fileTransID);
 	ZCom_NodeID getNetworkID(void);
 	ZCom_BitStream* getNextEvent(eZCom_Event* event, eZCom_NodeRole* remoteRole, ZCom_ConnID* connID);
 	eZCom_NodeRole getRole(void);
 	bool registerNodeDynamic(ZCom_ClassID classID, ZCom_Control* zControl);
 	bool registerNodeUnique(ZCom_ClassID classID, eZCom_NodeRole nodeRole, ZCom_Control* zControl);
 	bool registerRequestedNode(ZCom_ClassID classID, ZCom_Control* zControl);
+	void removeFromZoidLevel(int level);
 	void sendEvent(eZCom_SendMode sendMode, zU8 rules, ZCom_BitStream* data);
 	void sendEventDirect(eZCom_SendMode sendMode, ZCom_BitStream* data, ZCom_ConnID connID);
+	ZCom_FileTransID sendFile(const char* fileName, int unk002, ZCom_ConnID connID, int unk004, float unk005);
 	void setAnnounceData(ZCom_BitStream* bitStream);
 	void setEventNotification(bool unk001, bool unk002);
 	void setInterceptID(ZCom_InterceptID interceptID);
@@ -183,6 +202,7 @@ class ZCom_Replicator
 public:
 	ZCom_ReplicatorSetup* getSetup(void);
 	void* peekData(void);
+	void peekDataStore(void* data);
 
 };
 

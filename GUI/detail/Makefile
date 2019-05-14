@@ -1,8 +1,14 @@
 CC= g++
 OBJECTS= \
 button.o \
+check.o \
 context.o \
+edit.o \
+group.o \
+gss.o \
+label.o \
 list.o \
+renderer.o \
 wnd.o \
 xml.o \
 

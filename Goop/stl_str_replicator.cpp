@@ -1,6 +1,7 @@
 #include "stl_str_replicator.h"
 
 #include <zoidcom.h>
+#include <cassert>
 #include <string>
 
 using namespace std;

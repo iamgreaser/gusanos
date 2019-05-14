@@ -41,7 +41,7 @@ bool LevelEffect::load(fs::path const& filename)
 	if (!fileStream )
 		return false;
 	
-	OmfgScript::Parser parser(fileStream, gameActions, filename.native_file_string());
+	OmfgScript::Parser parser(fileStream, gameActions, filename.native());
 	
 	if(!parser.run())
 	{
