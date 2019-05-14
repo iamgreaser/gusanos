@@ -1,12 +1,15 @@
 CC= g++
-SOURCES= console.cpp bindings.cpp variables.cpp text.cpp consoleitem.cpp \
-	command.cpp alias.cpp special_command.cpp
-INCLUDES= console.h bindings.h variables.h text.h consoleitem.h command.h \
-	alias.h special_command.h
-OBJECTS= console.o bindings.o variables.o text.o consoleitem.o command.o \
-	alias.o special_command.o
+OBJECTS= \
+alias.o \
+bindings.o \
+command.o \
+console.o \
+consoleitem.o \
+special_command.o \
+text.o \
+variables.o
 
-CFLAGS= -O3 -mwindows
+CFLAGS= -O3 -I../Utility/
 LIBRARY= libgcon.a
 
 $(LIBRARY): $(OBJECTS)
@@ -16,4 +19,4 @@ $(LIBRARY): $(OBJECTS)
 	$(CC) -c $< $(CFLAGS) $(DEFINES)
 
 clean:
-	del $(OBJECTS)
+	rm $(OBJECTS)

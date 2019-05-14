@@ -5,6 +5,7 @@
 #include <fstream>
 #include <ostream>
 #include <string>
+#include <cstring>
 #include <map>
 #include "util/macros.h"
 #include <boost/preprocessor/cat.hpp>

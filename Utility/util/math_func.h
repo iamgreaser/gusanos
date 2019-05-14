@@ -28,7 +28,7 @@ inline unsigned long rndInt(unsigned long max)
 }
 
 template<unsigned int B, unsigned int E>
-struct ctpow { static unsigned int const value = ctpow<B*B, E>>1>::value * ((E & 1) ? B : 1); };
+struct ctpow { static unsigned int const value = ctpow<B*B, (E>>1)>::value * ((E & 1) ? B : 1); };
 
 template<unsigned int B>
 struct ctpow<B, 0> { static unsigned int const value = 1; };

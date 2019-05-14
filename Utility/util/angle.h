@@ -1,6 +1,7 @@
 #ifndef GUSANOS_ANGLE_H
 #define GUSANOS_ANGLE_H
 
+#include <cassert>
 #include <climits>
 #include <iostream>
 #include <zoidcom.h>
