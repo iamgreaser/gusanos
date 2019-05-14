@@ -42,6 +42,7 @@ typedef std::string ZComUnofficial_IP; // What, you think we're going to lock th
 #define ZCOM_REPRULE_AUTH_2_PROXY 0x02
 #define ZCOM_REPRULE_OWNER_2_AUTH 0x04
 #define ZCOM_REPRULE_AUTH_2_OWNER 0x08
+#define ZCOM_REPRULE_NONE 0x10
 
 typedef enum eZCom_CloseReason_enum
 {
@@ -109,11 +110,13 @@ class ZCom_BitStream
 public:
 	void addBitStream(ZCom_BitStream* bitStream);
 	void addBool(bool data);
+	void addFloat(zFloat data, int fracbits);
 	void addInt(zU32 data, int bits);
 	void addSignedInt(zS32 data, int bits);
 	void addString(std::string data);
 	ZCom_BitStream* Duplicate(void);
 	bool getBool(void);
+	zFloat getFloat(int fracbits);
 	zU32 getInt(int bits);
 	zS32 getSignedInt(int bits);
 	//std::string getStringStatic(void);
