@@ -14,8 +14,8 @@
 #include <list>
 #include <cmath>
 #include "events.h"
-#include <boost/array.hpp>
-using boost::array;
+#include <array>
+using std::array;
 
 class Sprite;
 class LevelEffect;
@@ -203,7 +203,7 @@ private:
 	bool m_firstFrame;
 	
 	std::list<WaterParticle> m_water;
-	static const float WaterSkipFactor = 0.05f;
+	static constexpr float WaterSkipFactor = 0.05f;
 };
 
 #define SIGN(x_) ((x_) < 0 ? -1 : (x_) > 0 ? 1 : 0)

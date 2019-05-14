@@ -13,8 +13,8 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include <boost/array.hpp>
-using boost::array;
+#include <array>
+using std::array;
 
 class Font
 {

@@ -13,8 +13,8 @@
 #include <list>
 #include <map>
 #include <set>
-#include <boost/array.hpp>
-using boost::array;
+#include <array>
+using std::array;
 
 #ifndef DEDSERV
 class SpriteSet;
@@ -29,7 +29,7 @@ public:
 	{
 		BindingLock()
 		{
-			enable.assign(true);
+			enable.fill(true);
 		}
 		
 		array<bool, 256> enable;

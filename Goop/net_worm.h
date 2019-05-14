@@ -38,7 +38,7 @@ public:
 	};
 		
 	static ZCom_ClassID  classID;
-	static const float MAX_ERROR_RADIUS = 10;
+	static constexpr float MAX_ERROR_RADIUS = 10;
 		
 	NetWorm(bool isAuthority);
 	~NetWorm();

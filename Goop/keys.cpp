@@ -25,7 +25,7 @@ int kName2Int(const string &name)
 	return -1;
 }
 
-array<std::string, KEY_MAX+1> keyNames =
+std::array<std::string, KEY_MAX+1> keyNames =
 {
 	"NULL",
 	"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",

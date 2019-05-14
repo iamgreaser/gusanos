@@ -1,9 +1,9 @@
 CC= g++
-CFLAGS= -O3 -I ../loadpng -I ../Console  -I ../GUI -I ../Utility -I ../freakazoid -I ../lua51 -I ../http -I .
+CFLAGS= -O3 -I ../loadpng -I ../Console  -I ../GUI -I ../Utility -I ../freakazoid -I ../lua51 -I ../http -I . `allegro-config --cflags` -DALLEGRO_NO_FIX_ALIASES=1
 LIBS= -L../Console -L../GUI/detail -lpng -lz `allegro-config --libs` -lzoidcom -lgcon -lfmod \
       -lboost_filesystem-gcc -lboost_signals-gcc -lomfggui --export-dynamic
 DEFINES= 
-BIN= ../gusanos.exe
+BIN= ../gusanos
 OLD_OBJECTS= \
 	liero.o \
 	material.o \
@@ -57,7 +57,7 @@ OLD_OBJECTS= \
 	../loadpng/loadpng.o ../loadpng/regpng.o ../loadpng/savepng.o
 
 OBJECTS= gusanos.o keyboard.o gconsole.o keys.o resource_list.o sprite.o \
-	font.o vec.o level.o game.o material.o viewport.o base_object.o \
+	font.o level.o game.o material.o viewport.o base_object.o \
 	worm.o part_type.o particle.o base_action.o events.o \
 	game_actions.o parser.o sound.o gfx.o sfx.o base_animator.o animators.o distortion.o \
 	player.o player_input.o base_player.o player_options.o weapon.o weapon_type.o player_ai.o \

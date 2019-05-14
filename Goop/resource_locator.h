@@ -80,7 +80,7 @@ struct ResourceLocator
 	{
 		for(typename NamedResourceMap::iterator i = m_namedResources.begin(); i != m_namedResources.end();)
 		{
-			typename NamedResourceMap::iterator next = boost::next(i);
+			typename NamedResourceMap::iterator next = std::next(i);
 			
 			if(!i->second.cached)
 			{

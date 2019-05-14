@@ -292,7 +292,7 @@ GConsole::GConsole()
 #endif
 {
 #ifndef DEDSERV
-	m_lockRefCount.assign(0);
+	m_lockRefCount.fill(0);
 #endif
 	scrolling = false;
 }
@@ -650,9 +650,9 @@ int GConsole::executeConfig(const std::string& filename)
 {
 	fs::path p(game.getModPath() / filename);
 	if ( fs::exists(p) )
-		return Console::executeConfig(p.native_file_string());
+		return Console::executeConfig(p.native());
 	else
-		return Console::executeConfig((game.getDefaultPath() / filename).native_file_string());
+		return Console::executeConfig((game.getDefaultPath() / filename).native());
 }
 
 void GConsole::addQueueCommand( std::string const & command )

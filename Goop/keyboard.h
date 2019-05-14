@@ -62,9 +62,9 @@ public:
 	//static void setAltGrCharacter(int key, int character);
 	//static void setCharacter(int key, int character);
 	
-	boost::signals2<bool (int), StopEarly> keyDown;
-	boost::signals2<bool (int), StopEarly> keyUp;
-	boost::signals2<bool (char, int), StopEarly> printableChar;
+	boost::signals2::signal<bool (int), StopEarly> keyDown;
+	boost::signals2::signal<bool (int), StopEarly> keyUp;
+	boost::signals2::signal<bool (char, int), StopEarly> printableChar;
 	
 private:
 	

@@ -85,7 +85,7 @@ public:
 				item = m_resItems.find(filename);
 				m_resItems.erase(item);
 				if(!suppressError)
-					cerr << "ERROR: Could not load " << filename.native_file_string() << endl;
+					cerr << "ERROR: Could not load " << filename.native() << endl;
 				return NULL;
 			}
 		}

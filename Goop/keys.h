@@ -3,8 +3,8 @@
 
 #include <string>
 #include <vector>
-#include <boost/array.hpp>
-using boost::array;
+#include <array>
+using std::array;
 
 int kName2Int(const std::string &name);
 
