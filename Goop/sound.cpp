@@ -15,9 +15,6 @@ namespace fs = boost::filesystem;
 #include <allegro.h>
 //#include "text.h"
 
-//include <fmod.h>
-#include "fake_fmod.h"
-
 using namespace std;
 
 ResourceList<Sound> soundList;

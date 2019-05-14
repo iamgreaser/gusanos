@@ -9,8 +9,6 @@ using namespace boost::assign;
 
 #include <vector>
 #include <list>
-//include <fmod.h>
-#include "fake_fmod.h"
 #include <boost/utility.hpp>
 
 using namespace std;
@@ -153,8 +151,12 @@ void Sfx::think()
 
 		if( !obj->second
 		||  obj->second->deleteMe
-		||  !FSOUND_IsPlaying( obj->first ) )
+		||  voice_get_position( obj->first ) == -1 )
 		{
+			if( voice_check( obj->first ) != NULL )
+			{
+				release_voice( obj->first );
+			}
 			chanObject.erase(obj);
 		}
 		else
