@@ -173,7 +173,7 @@ namespace
 	bool m_host = false;
 	bool m_client = false; //? This wasn't initialized before
 	int logZoidcom = 0;
-	std::set<zU32> bannedIPs;
+	std::set<std::string> bannedIPs;
 	
 	int m_serverPort; // Neither was this
 	

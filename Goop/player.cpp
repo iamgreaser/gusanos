@@ -8,7 +8,7 @@
 
 //#include <allegro.h>
 
-using namespace std;
+//using namespace std; // For some reason, commenting out this wart made this file compile --GM
 
 Player::Player(shared_ptr<PlayerOptions> options, BaseWorm* worm)
 : BasePlayer(options, worm)

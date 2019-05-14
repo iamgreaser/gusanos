@@ -97,7 +97,7 @@ bool WeaponType::load(fs::path const& filename)
 		
 	fileName = filename;
 	
-	OmfgScript::Parser parser(fileStream, gameActions, filename.native_file_string());
+	OmfgScript::Parser parser(fileStream, gameActions, filename.native());
 	
 	namespace af = OmfgScript::ActionParamFlags;
 		

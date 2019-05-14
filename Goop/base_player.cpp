@@ -18,7 +18,8 @@
 //#include <allegro.h>
 #include <list>
 
-using namespace std;
+using std::list;
+using std::vector;
 
 ZCom_ClassID BasePlayer::classID = ZCom_Invalid_ID;
 
