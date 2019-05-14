@@ -1,5 +1,5 @@
 CC= g++
-CFLAGS= -O3 -I ../loadpng -I ../Console  -I ../GUI -I ../Utility -I ../freakazoid -I ../lua51 -I ../http -I . `allegro-config --cflags` -DALLEGRO_NO_FIX_ALIASES=1
+CFLAGS= -O3 -I ../loadpng -I ../Console  -I ../GUI -I ../Utility -I ../freakazoid -I ../lua51 -I ../http -I ../OmfgScript -I . `allegro-config --cflags` -DALLEGRO_NO_FIX_ALIASES=1
 LIBS= -L../Console -L../GUI/detail -lpng -lz `allegro-config --libs` -lzoidcom -lgcon -lfmod \
       -lboost_filesystem-gcc -lboost_signals-gcc -lomfggui --export-dynamic
 DEFINES= 
