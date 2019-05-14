@@ -1,7 +1,7 @@
 CC= g++
 CFLAGS= -O3 -I ../loadpng -I ../Console  -I ../GUI -I ../Utility -I ../freakazoid -I ../lua51 -I ../http -I ../OmfgScript -I . `allegro-config --cflags` -DALLEGRO_NO_FIX_ALIASES=1
-LIBS= -L../Console -L../GUI/detail -lpng -lz `allegro-config --libs` -lzoidcom -lgcon -lfmod \
-      -lboost_filesystem-gcc -lboost_signals-gcc -lomfggui --export-dynamic
+LIBS= -L../Console -L../GUI/detail -lpng -lz `allegro-config --libs` -lgcon \
+      -lboost_filesystem -lomfggui -export-dynamic
 DEFINES= 
 BIN= ../gusanos
 OLD_OBJECTS= \
@@ -61,7 +61,7 @@ OBJECTS= gusanos.o keyboard.o gconsole.o keys.o resource_list.o sprite.o \
 	worm.o part_type.o particle.o base_action.o events.o \
 	game_actions.o parser.o sound.o gfx.o sfx.o base_animator.o animators.o distortion.o \
 	player.o player_input.o base_player.o player_options.o weapon.o weapon_type.o player_ai.o \
-	ninjarope.o server.o client.o network.o base_worm.o net_worm.o liero.o \
+	ninjarope.o server.o client.o network.o base_worm.o net_worm.o \
 	loaders/gusanos.o loaders/liero.o loaders/lierox.o
 	
 

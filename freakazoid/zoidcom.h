@@ -12,6 +12,7 @@ Because the original library no longer exists.
 typedef uint8_t zU8;
 typedef int32_t zS32;
 typedef uint32_t zU32;
+typedef float zFloat;
 
 typedef int32_t ZCom_ClassID;
 typedef int32_t ZCom_ConnID;
@@ -107,10 +108,12 @@ class ZCom_BitStream
 {
 public:
 	void addBitStream(ZCom_BitStream* bitStream);
+	void addBool(bool data);
 	void addInt(zU32 data, int bits);
 	void addSignedInt(zS32 data, int bits);
 	void addString(std::string data);
 	ZCom_BitStream* Duplicate(void);
+	bool getBool(void);
 	zU32 getInt(int bits);
 	zS32 getSignedInt(int bits);
 	//std::string getStringStatic(void);
@@ -143,6 +146,7 @@ public:
 class ZCom_Node
 {
 public:
+	void addReplicationFloat(zFloat* data, int unk002, zU32 flags, zU8 rules);
 	void addReplicationInt(zS32* data, int bits, bool unk003, zU32 flags, zU8 rules);
 	void addReplicationInt(zS32* data, int bits, bool unk003, zU32 flags, zU8 rules, zU32 unk006);
 	void addReplicator(ZCom_Replicator* replicator, bool unk002);
@@ -182,6 +186,8 @@ public:
 class ZCom_ReplicatorBasic : public ZCom_Replicator
 {
 public:
+	ZCom_ReplicatorBasic(ZCom_ReplicatorSetup* setup);
+
 	int m_flags = 0;
 	ZCom_BitStream* getPeekStream(void);
 	void* peekDataRetrieve(void);
@@ -190,7 +196,9 @@ public:
 class ZCom_ReplicatorSetup
 {
 public:
+	ZCom_ReplicatorSetup(zU32 flags, zU8 rules);
 	ZCom_ReplicatorSetup(zU32 flags, zU8 rules, int someType, int unk004, int probablyATimeoutInMilliseconds);
+
 	ZCom_InterceptID getInterceptID(void);
 
 };

@@ -29,7 +29,7 @@ bool GusanosLevelLoader::canLoad(fs::path const& path, std::string& name)
 {
 	if(fs::exists(path / "config.cfg"))
 	{
-		name = path.leaf();
+		name = path.leaf().native();
 		return true;
 	}
 	return false;
@@ -48,9 +48,9 @@ namespace{
 		fs::ifstream fileStream(filename, std::ios::binary | std::ios::in);
 
 		if (!fileStream )
-			return false;
+			return NULL;
 		
-		OmfgScript::Parser parser(fileStream, gameActions, filename.native_file_string());
+		OmfgScript::Parser parser(fileStream, gameActions, filename.native());
 		
 		parser.addEvent("game_start", GameStart, 0);
 		parser.addEvent("game_end", GameEnd, 0);
@@ -58,7 +58,7 @@ namespace{
 		if(!parser.run())
 		{
 			parser.error("Trailing garbage");
-			return false;
+			return NULL;
 		}
 		
 		LevelConfig* returnConf = new LevelConfig;
@@ -124,9 +124,9 @@ namespace{
 	
 bool GusanosLevelLoader::load(Level* level, fs::path const& path)
 {
-	std::string materialPath = (path / "material").native_file_string();
+	std::string materialPath = (path / "material").native();
 	
-	level->path = path.native_directory_string();
+	level->path = path.native();
 	
 	{
 		LocalSetColorDepth cd(8);
@@ -137,22 +137,22 @@ bool GusanosLevelLoader::load(Level* level, fs::path const& path)
 	{
 		level->setEvents( loadConfig( path / "config.cfg" ) );
 #ifndef DEDSERV
-		std::string imagePath = (path / "level").native_file_string();
+		std::string imagePath = (path / "level").native();
 		
 		level->image = gfx.loadBitmap(imagePath.c_str(), 0);
 		if (level->image)
 		{			
-			std::string backgroundPath = (path / "background").native_file_string();
+			std::string backgroundPath = (path / "background").native();
 			
 			level->background = gfx.loadBitmap(backgroundPath.c_str(),0);
 			
-			std::string paralaxPath = (path / "paralax").native_file_string();
+			std::string paralaxPath = (path / "paralax").native();
 			level->paralax = gfx.loadBitmap(paralaxPath.c_str(),0);
 			
 			if(!level->paralax)
 				std::cerr << "Paralax not loaded" << std::endl;
 			
-			std::string lightmapPath = (path / "lightmap").native_file_string();
+			std::string lightmapPath = (path / "lightmap").native();
 		
 			BITMAP* tempLightmap = gfx.loadBitmap(lightmapPath.c_str(),0);
 			if ( tempLightmap )
@@ -209,7 +209,7 @@ bool GusanosFontLoader::load(Font* font, fs::path const& path)
 		LocalSetColorDepth cd(8);
 		LocalSetColorConversion cc(COLORCONV_REDUCE_TO_256 | COLORCONV_KEEP_TRANS);
 	
-		font->m_bitmap = load_bitmap(path.native_file_string().c_str(), 0);
+		font->m_bitmap = load_bitmap(path.native().c_str(), 0);
 		if(!font->m_bitmap)
 			return false;
 		
@@ -245,7 +245,7 @@ bool GusanosFontLoader::load(Font* font, fs::path const& path)
 	
 	return true;
 	/*
-	BITMAP *tempBitmap = load_bmp(path.native_file_string().c_str(),0);
+	BITMAP *tempBitmap = load_bmp(path.native().c_str(),0);
 	if (tempBitmap)
 	{
 		int width = tempBitmap->w / 256;
@@ -281,7 +281,7 @@ bool XMLLoader::canLoad(fs::path const& path, std::string& name)
 	
 bool XMLLoader::load(XMLFile* xml, fs::path const& path)
 {
-	xml->f.open(path, std::ios::binary);
+	xml->f.open(path.native(), std::ios::binary);
 	
 	if(!xml->f)
 		return false;
@@ -358,7 +358,7 @@ bool LuaLoader::load(Script* script, fs::path const& path)
 	}
 	lua_settop(lua, -2); // Pop table or nil
 	
-	lua.load(path.native_file_string().c_str(), f);
+	lua.load(path.native().c_str(), f);
 	
 	script->lua = &lua;
 	script->table = name;
