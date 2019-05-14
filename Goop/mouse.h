@@ -5,7 +5,7 @@
 #error "Can't use this in dedicated server"
 #endif //DEDSERV
 
-#include <boost/signal.hpp>
+#include <boost/signals2.hpp>
 
 class MouseHandler
 {
@@ -34,10 +34,10 @@ public:
 	static int getX();
 	static int getY();
 
-	boost::signal<bool (int), StopEarly> buttonDown;
-	boost::signal<bool (int), StopEarly> buttonUp;
-	boost::signal<bool (int, int), StopEarly> move;
-	boost::signal<bool (int), StopEarly> scroll;
+	boost::signals2::signal<bool (int), StopEarly> buttonDown;
+	boost::signals2::signal<bool (int), StopEarly> buttonUp;
+	boost::signals2::signal<bool (int, int), StopEarly> move;
+	boost::signals2::signal<bool (int), StopEarly> scroll;
 };
 
 extern MouseHandler mouseHandler;
