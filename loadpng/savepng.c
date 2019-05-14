@@ -137,7 +137,7 @@ int save_png(AL_CONST char *filename, BITMAP *bmp, AL_CONST RGB *pal)
     }
 
     /* Set error handling. */
-    if (setjmp(png_ptr->jmpbuf)) {
+    if (setjmp(png_jmpbuf(png_ptr))) {
 	/* If we get here, we had a problem reading the file. */
 	pack_fclose(fp);
 	png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
