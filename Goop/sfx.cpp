@@ -9,7 +9,8 @@ using namespace boost::assign;
 
 #include <vector>
 #include <list>
-#include <fmod.h>
+//include <fmod.h>
+#include "fake_fmod.h"
 #include <boost/utility.hpp>
 
 using namespace std;
