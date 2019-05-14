@@ -1,7 +1,7 @@
 CC= g++
 CFLAGS= -O3 -I ../loadpng -I ../Console  -I ../GUI -I ../Utility -I ../freakazoid -I ../lua51 -I ../http -I ../OmfgScript -I . `allegro-config --cflags` -DALLEGRO_NO_FIX_ALIASES=1
-LIBS= -L../Console -L../GUI/detail -L../GUI/lua -L../http -L../Utility/util -L../OmfgScript -L../lua51 -L../lua51/luaapi -Llua -Lblitters -lpng -lz `allegro-config --libs` -lgcon \
-      -lboost_filesystem -lomfgblitters -lomfggui -lomfgguibindings -lomfghttp -lomfgscript -lomfgutil -lluaapi-gusanos -lluabindings -llua51-gusanos -export-dynamic
+LIBS= -L../Console -L../GUI/detail -L../GUI/lua -L../http -L../Utility/util -L../OmfgScript -L../lua51 -L../lua51/luaapi -L../freakazoid -Llua -Lblitters -lpng -lz `allegro-config --libs` -lgcon \
+      -lboost_filesystem -lomfgblitters -lomfggui -lomfgguibindings -lomfghttp -lomfgscript -lomfgutil -lluaapi-gusanos -lluabindings -llua51-gusanos -lfreakazoid -export-dynamic
 DEFINES= 
 BIN= ../gusanos
 OBJECTS= \

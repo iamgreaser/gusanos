@@ -220,6 +220,7 @@ public:
 
 	bool Init(void);
 	void setLogLevel(int level);
+private:
 };
 
 #endif /* ifdef _FREAKAZOID_ZOIDCOM_H */
