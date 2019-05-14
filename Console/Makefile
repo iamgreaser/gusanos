@@ -6,7 +6,6 @@ command.o \
 console.o \
 consoleitem.o \
 special_command.o \
-text.o \
 variables.o
 
 CFLAGS= -O3 -I../Utility/

@@ -26,7 +26,8 @@ struct StringBuilder
 	
 	operator bool()
 	{
-		return ss;
+		//return ss; // GUS FIXME: confirm this --GM
+		return ss.str() != "";
 	}
 	
 private:
