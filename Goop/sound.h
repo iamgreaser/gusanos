@@ -10,10 +10,10 @@
 #include "glua.h"
 #include <string>
 #include <boost/filesystem/path.hpp>
+#include <allegro.h>
 namespace fs = boost::filesystem;
 
 class BaseObject;
-struct FSOUND_SAMPLE;
 
 class Sound : public LuaObject
 {
@@ -29,7 +29,7 @@ class Sound : public LuaObject
 	
 	private:
 	
-	FSOUND_SAMPLE * m_sound;
+	SAMPLE * m_sound;
 	
 };
 

@@ -46,8 +46,17 @@ void Sfx::init()
 {
 	// Select a driver
 	
-	FSOUND_SetOutput(m_outputMode);
-	FSOUND_SetDriver(0);
+	//FSOUND_SetOutput(m_outputMode);
+	if(m_outputMode == -1)
+	{
+		detect_digi_driver(DIGI_AUTODETECT);
+		install_sound(DIGI_AUTODETECT, MIDI_NONE, NULL);
+	}
+	else
+	{
+		detect_digi_driver(m_outputMode);
+		install_sound(m_outputMode, MIDI_NONE, NULL);
+	}
 	
 	/* We select default driver for now
 	int numDrivers = FSOUND_GetNumDrivers();
@@ -67,18 +76,20 @@ void Sfx::init()
 	
 	FSOUND_SetDriver(selectedDriver);*/
 
-	FSOUND_Init(44100, 32, 0);
-	FSOUND_3D_SetDistanceFactor(20);
-	FSOUND_3D_SetRolloffFactor(2);
+	//FSOUND_Init(44100, 32, 0);
+	//FSOUND_3D_SetDistanceFactor(20);
+	//FSOUND_3D_SetRolloffFactor(2);
 	volumeChange();
 	
-	console.addLogMsg(string("* FMOD LIB INITIALIZED, USING DRIVER ") + FSOUND_GetDriverName(FSOUND_GetDriver()));
+	//console.addLogMsg(string("* FMOD LIB INITIALIZED, USING DRIVER ") + FSOUND_GetDriverName(FSOUND_GetDriver()));
+	//console.addLogMsg(string("* SOUND INITIALIZED, USING DRIVER ") + FSOUND_GetDriverName(FSOUND_GetDriver()));
+	console.addLogMsg(string("* SOUND INITIALIZED, USING WHATEVER YOU SET UP IN allegro.cfg"));
 	m_initialized = true;
 }
 
 void Sfx::shutDown()
 {
-	FSOUND_Close();
+	remove_sound();
 }
 
 void Sfx::registerInConsole()
@@ -86,16 +97,18 @@ void Sfx::registerInConsole()
 	{
 		EnumVariable::MapType outputModes;
 		insert(outputModes)
-			("AUTO", -1)
-			("NOSFX", FSOUND_OUTPUT_NOSOUND)
+			("AUTO", DIGI_AUTODETECT)
+			("NOSFX", DIGI_NONE)
 #ifdef WINDOWS
-			("WINMM", FSOUND_OUTPUT_WINMM)
-			("DSOUND", FSOUND_OUTPUT_DSOUND)
+			("WINMM", DIGI_WAVOUTID(0))
+			("DSOUND", DIGI_DIRECTX(0))
 #else //ifdef LINUX
-			("A3D", FSOUND_OUTPUT_A3D) // Is this Linux, Windows or both?
-			("OSS", FSOUND_OUTPUT_OSS)
-			("ESD", FSOUND_OUTPUT_ESD)
-			("ALSA", FSOUND_OUTPUT_ALSA)
+			//("A3D", FSOUND_OUTPUT_A3D) // Is this Linux, Windows or both?
+			("OSS", DIGI_OSS)
+			("ESD", DIGI_ESD)
+			("ARTS", DIGI_ARTS) // OMEGALUL --GM
+			("ALSA", DIGI_ALSA)
+			("JACK", DIGI_JACK)
 			//("ASIO", FSOUND_OUTPUT_ASIO) //What's this
 #endif
 
@@ -120,13 +133,11 @@ void Sfx::registerInConsole()
 
 void Sfx::think()
 {
-	FSOUND_Update();
-	
 	for (size_t i = 0; i < listeners.size(); ++i )
 	{
-		FSOUND_3D_Listener_SetCurrent(i,listeners.size());
+		//FSOUND_3D_Listener_SetCurrent(i,listeners.size());
 		float pos[3] = { listeners[i]->pos.x, listeners[i]->pos.y, -m_listenerDistance };
-		FSOUND_3D_Listener_SetAttributes(pos,NULL,0,0,1,0,1,0);
+		//FSOUND_3D_Listener_SetAttributes(pos,NULL,0,0,1,0,1,0);
 	}
 	
 	//Update 3d channel that follow objects positions
@@ -149,7 +160,7 @@ void Sfx::think()
 		else
 		{
 			float pos[3] = { obj->second->pos.x, obj->second->pos.y, 0 };
-			FSOUND_3D_SetAttributes(obj->first, pos, NULL);
+			//FSOUND_3D_SetAttributes(obj->first, pos, NULL);
 		}
 	}
 
@@ -201,7 +212,7 @@ void Sfx::freeListener(Listener* listener)
 
 void Sfx::volumeChange()
 {
-	FSOUND_SetSFXMasterVolume(m_volume);
+	set_volume(m_volume, 0);
 }
 
 Sfx::operator bool()

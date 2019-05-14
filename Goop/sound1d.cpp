@@ -28,13 +28,21 @@ Sound1D::Sound1D()
 
 Sound1D::~Sound1D()
 {
-	if ( m_sound )  FSOUND_Sample_Free( m_sound );
+	if ( m_sound )  destroy_sample( m_sound );
 }
 
 bool Sound1D::load(fs::path const& filename)
 {	
-	//cerr << "Loading sound: " << filename.native_file_string() << endl;
-	m_sound = FSOUND_Sample_Load( FSOUND_FREE, filename.native_file_string().c_str(), FSOUND_2D | FSOUND_FORCEMONO, 0, 0 );
+	// TEMPORARY MEASURE UNTIL WE GET AN ALLEGRO 4 OGG LOADER --GM
+	std::string raw_filename = filename.native();
+	std::size_t ogg_offs = raw_filename.find( ".ogg" );
+	if ( ogg_offs != std::string::npos )
+	{
+		raw_filename = raw_filename.replace( ogg_offs, 4, ".wav" );
+	}
+
+	cerr << "Loading 1D sound: " << raw_filename << endl;
+	m_sound = load_sample( raw_filename.c_str() );
 	if ( m_sound )
 	{
 		return true;
@@ -46,18 +54,16 @@ void Sound1D::play(float volume,float pitch, float volumeVariation, float pitchV
 {
 	if( m_sound ) 
 	{
-		int chan = FSOUND_PlaySoundEx(FSOUND_FREE, m_sound, 0, 1);
-		if ( chan != -1 )
+		//int chan = FSOUND_PlaySoundEx(FSOUND_FREE, m_sound, 0, 1);
+		float rndPitch = pitch + midrnd()*pitchVariation;
+		float rndVolume = volume + midrnd()*volumeVariation;
+		int chan = play_sample(m_sound, 255*volume, 128, 1000*pitch, 0);
+		if ( chan >= 0 )
 		{
-			float rndPitch = pitch + midrnd()*pitchVariation;
-			FSOUND_SetFrequency(chan, static_cast<int>(FSOUND_GetFrequency(chan) * rndPitch) );
-			
-			float rndVolume = volume + midrnd()*volumeVariation;
-			FSOUND_SetVolume(chan, static_cast<int>(FSOUND_GetVolume(chan)*rndVolume) );
-			
-			FSOUND_SetLoopMode( chan, FSOUND_LOOP_OFF );
-			
-			FSOUND_SetPaused(chan, 0);
+			//FSOUND_SetFrequency(chan, static_cast<int>(FSOUND_GetFrequency(chan) * rndPitch) );
+			//FSOUND_SetVolume(chan, static_cast<int>(FSOUND_GetVolume(chan)*rndVolume) );
+			//FSOUND_SetLoopMode( chan, FSOUND_LOOP_OFF );
+			//FSOUND_SetPaused(chan, 0);
 		}
 	}
 }
