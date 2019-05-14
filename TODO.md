@@ -4,7 +4,6 @@ Important stuff:
 
 * [ ] Fix the build system
   * [ ] Switch to single Makefile w/ no `*.a` files lying around
-  * [ ] Throw out all the good stuff
   * [ ] Then switch it over to something else, possibly CMake
 
 * [ ] Fix some of the old code
