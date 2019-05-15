@@ -1,0 +1,2 @@
+OBJECTS += \
+freakazoid/zoidcom.o
