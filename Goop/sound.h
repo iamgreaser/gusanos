@@ -30,7 +30,6 @@ class Sound : public LuaObject
 	private:
 	
 	SAMPLE * m_sound;
-	
 };
 
 extern ResourceList<Sound> soundList;

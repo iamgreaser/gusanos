@@ -50,6 +50,7 @@ void Sound1D::play(float volume,float pitch, float volumeVariation, float pitchV
 		int chan = play_sample(m_sound, 255*volume, 128, 1000*pitch, 0);
 		if ( chan >= 0 )
 		{
+			sfx.clearChanPos( chan );
 			//FSOUND_SetFrequency(chan, static_cast<int>(FSOUND_GetFrequency(chan) * rndPitch) );
 			//FSOUND_SetVolume(chan, static_cast<int>(FSOUND_GetVolume(chan)*rndVolume) );
 			//FSOUND_SetLoopMode( chan, FSOUND_LOOP_OFF );

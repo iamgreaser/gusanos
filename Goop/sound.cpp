@@ -51,6 +51,7 @@ void Sound::play(float volume,float pitch, float volumeVariation, float pitchVar
 		int chan = play_sample(m_sound, 255*rndVolume, 128, 1000*rndPitch, 0);
 		if ( chan >= 0 )
 		{
+			sfx.clearChanPos( chan );
 			//FSOUND_SetFrequency(chan, static_cast<int>(FSOUND_GetFrequency(chan) * rndPitch) );
 			//FSOUND_SetVolume(chan, static_cast<int>(FSOUND_GetVolume(chan)*rndVolume) );
 			//FSOUND_SetLoopMode( chan, FSOUND_LOOP_OFF );
@@ -64,11 +65,16 @@ void Sound::play2D(const Vec& pos, float loudness, float pitch, float pitchVaria
 	if( m_sound ) 
 	{
 		//int chan = FSOUND_PlaySoundEx(FSOUND_FREE, m_sound, NULL, 1);
-		float _pos[3] = { pos.x, pos.y, 0 };
+		//float _pos[3] = { pos.x, pos.y, 0 };
 		float rndPitch = pitch + rnd()*pitchVariation - pitchVariation / 2;
-		int chan = play_sample(m_sound, 255*loudness/100.0f, 128, 1000*rndPitch, 0);
+		int chanLoudness = 255*loudness/100.0f;
+		int chanPanning = 128;
+		sfx.calculateVolumes(loudness, pos.x, pos.y, &chanLoudness, &chanPanning);
+		int chan = play_sample(m_sound, chanLoudness, chanPanning, 1000*rndPitch, 0);
 		if ( chan >= 0 )
 		{
+			sfx.setChanPos( chan, pos.x, pos.y );
+			sfx.setChanLoudness( chan, loudness );
 			//FSOUND_3D_SetAttributes(chan, _pos, NULL);
 			//FSOUND_SetFrequency(chan, static_cast<int>(FSOUND_GetFrequency(chan) * rndPitch) );
 			//FSOUND_3D_SetMinMaxDistance(chan, loudness, 10000.0f);
@@ -83,13 +89,18 @@ void Sound::play2D(BaseObject* obj, float loudness, float pitch, float pitchVari
 	if( m_sound ) 
 	{
 		//int chan = FSOUND_PlaySoundEx(FSOUND_FREE, m_sound, NULL, 1);
-		float pos[3] = { obj->pos.x, obj->pos.y, 0 };
+		//float pos[3] = { obj->pos.x, obj->pos.y, 0 };
 		float rndPitch = pitch + rnd()*pitchVariation - pitchVariation / 2;
-		int chan = play_sample(m_sound, 255*loudness/100.0f, 128, 1000*rndPitch, 0);
+		int chanLoudness = 255*loudness/100.0f;
+		int chanPanning = 128;
+		sfx.calculateVolumes(loudness, obj->pos.x, obj->pos.y, &chanLoudness, &chanPanning);
+		int chan = play_sample(m_sound, chanLoudness, chanPanning, 1000*rndPitch, 0);
 		if ( chan >= 0 )
 		{
 			//FSOUND_3D_SetAttributes(chan, pos, NULL);
 			sfx.setChanObject( chan, obj );
+			sfx.setChanPos( chan, obj->pos.x, obj->pos.y );
+			sfx.setChanLoudness( chan, loudness );
 			//FSOUND_SetFrequency(chan, static_cast<int>(FSOUND_GetFrequency(chan) * rndPitch) );
 			//FSOUND_3D_SetMinMaxDistance(chan, loudness, 10000.0f);
 			//FSOUND_SetLoopMode( chan, FSOUND_LOOP_OFF );

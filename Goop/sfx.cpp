@@ -17,6 +17,7 @@ using namespace boost::assign;
 #include <cstdint>
 #include <cstdio>
 #include <cassert>
+#include <cmath>
 #include <vorbis/vorbisfile.h>
 
 using namespace std;
@@ -28,6 +29,8 @@ namespace
 	bool m_initialized = false;
 	
 	std::list< std::pair< int, BaseObject* > > chanObject;
+	std::map< int, Vec > chanPosMap;
+	std::map< int, float > chanLoudness;
 	std::vector<Listener*> listeners;
 	
 	int m_volume;
@@ -140,12 +143,76 @@ void Sfx::registerInConsole()
 	}
 }
 
+void Sfx::calculateVolumes( float loudness, float x, float y, int *outLoudness, int *outPanning )
+{
+	// TODO: use OpenAL, because I really can't be arsed mixing this myself --GM
+
+	float volAccumL = 0.0f;
+	float volAccumR = 0.0f;
+
+	// Assuming a 60 degree angle for left and right,
+	// 30 degrees off centre.
+	constexpr float panX = 0.707f; // roughly sqrt(2)/2, or cos(30 deg)
+	constexpr float panY = 0.0f;
+	constexpr float panZ = 0.5f; // sin(30 deg)
+
+	const float panDist = m_listenerDistance;
+
+	for (size_t i = 0; i < listeners.size(); ++i )
+	{
+		// Get distance
+		float dx = x - listeners[i]->pos.x;
+		float dy = y - listeners[i]->pos.y;
+		float dz = m_listenerDistance;
+		float dist2 = dx*dx + dy*dy + dz*dz;
+		float dist = sqrtf(dist2);
+
+		// Normalise
+		float ndx = dx / dist;
+		float ndy = dy / dist;
+		float ndz = dz / dist;
+
+		// Compute dot products for each channel
+		float facL = (ndx*-panX + ndy*panY + ndz*panZ);
+		float facR = (ndx*+panX + ndy*panY + ndz*panZ);
+
+		// Calculate base loudness
+		float baseLoudness = loudness/dist;
+		if ( baseLoudness > 1.0f )
+		{
+			baseLoudness = 1.0f;
+		}
+
+		// Now multiply by the factors and accumulate
+		volAccumL += baseLoudness*facL;
+		volAccumR += baseLoudness*facR;
+	}
+
+	// Allegro 4's sound system likely doesn't have a concept of a negative volume.
+	// So we're going to clamp these for now.
+
+	if ( volAccumL < 0.0f )
+	{
+		volAccumL = 0.0f;
+	}
+
+	if ( volAccumR < 0.0f )
+	{
+		volAccumR = 0.0f;
+	}
+
+	// And now we calculate volume and panning.
+	float maxVol = (volAccumL > volAccumR ? volAccumL : volAccumR);
+	*outLoudness = (int)(255*maxVol);
+	*outPanning = (int)(255*volAccumR/maxVol);
+}
+
 void Sfx::think()
 {
 	for (size_t i = 0; i < listeners.size(); ++i )
 	{
 		//FSOUND_3D_Listener_SetCurrent(i,listeners.size());
-		float pos[3] = { listeners[i]->pos.x, listeners[i]->pos.y, -m_listenerDistance };
+		//float pos[3] = { listeners[i]->pos.x, listeners[i]->pos.y, -m_listenerDistance };
 		//FSOUND_3D_Listener_SetAttributes(pos,NULL,0,0,1,0,1,0);
 	}
 	
@@ -197,10 +264,28 @@ void Sfx::setChanObject(int chan, BaseObject* object)
 {
 	chanObject.push_back( pair< int, BaseObject* > ( chan, object ) );
 }
-	
+
+void Sfx::setChanPos(int chan, float x, float y)
+{
+	chanPosMap.emplace(chan, Vec(x, y));
+}
+
+void Sfx::setChanLoudness(int chan, float loudness)
+{
+	chanLoudness.emplace(chan, loudness);
+}
+
+void Sfx::clearChanPos(int chan)
+{
+	chanPosMap.erase(chan);
+	chanLoudness.erase(chan);
+}
+
 void Sfx::clear()
 {
 	chanObject.clear();
+	chanPosMap.clear();
+	chanLoudness.clear();
 }
 
 Listener* Sfx::newListener()

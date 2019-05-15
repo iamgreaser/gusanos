@@ -26,8 +26,12 @@ public:
 	void init();
 	void shutDown();
 	void registerInConsole();
+	void calculateVolumes( float loudness, float x, float y, int *outLoudness, int *outPanning );
 	void think();
 	void setChanObject( int chan, BaseObject* obj );
+	void setChanPos( int chan, float x, float y );
+	void setChanLoudness( int chan, float loudness );
+	void clearChanPos( int chan );
 	void clear();
 	Listener* newListener();
 	void freeListener(Listener* listener);
