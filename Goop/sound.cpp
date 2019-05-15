@@ -99,7 +99,6 @@ void Sound::play2D(BaseObject* obj, float loudness, float pitch, float pitchVari
 		{
 			//FSOUND_3D_SetAttributes(chan, pos, NULL);
 			sfx.setChanObject( chan, obj );
-			sfx.setChanPos( chan, obj->pos.x, obj->pos.y );
 			sfx.setChanLoudness( chan, loudness );
 			//FSOUND_SetFrequency(chan, static_cast<int>(FSOUND_GetFrequency(chan) * rndPitch) );
 			//FSOUND_3D_SetMinMaxDistance(chan, loudness, 10000.0f);

@@ -152,9 +152,9 @@ void Sfx::calculateVolumes( float loudness, float x, float y, int *outLoudness, 
 
 	// Assuming a 60 degree angle for left and right,
 	// 30 degrees off centre.
-	constexpr float panX = 0.707f; // roughly sqrt(2)/2, or cos(30 deg)
+	constexpr float panX = 0.5f; // sin(30 deg)
 	constexpr float panY = 0.0f;
-	constexpr float panZ = 0.5f; // sin(30 deg)
+	constexpr float panZ = 0.707f; // roughly sqrt(2)/2, or cos(30 deg)
 
 	const float panDist = m_listenerDistance;
 
@@ -171,6 +171,8 @@ void Sfx::calculateVolumes( float loudness, float x, float y, int *outLoudness, 
 		float ndx = dx / dist;
 		float ndy = dy / dist;
 		float ndz = dz / dist;
+
+		//cerr << "norm " << i << ": " << ndx << ", " << ndy << ", " << ndz << " x " << dist << endl;
 
 		// Compute dot products for each channel
 		float facL = (ndx*-panX + ndy*panY + ndz*panZ);
@@ -189,22 +191,33 @@ void Sfx::calculateVolumes( float loudness, float x, float y, int *outLoudness, 
 	}
 
 	// Allegro 4's sound system likely doesn't have a concept of a negative volume.
-	// So we're going to clamp these for now.
+	// So we're going to take the absolute value of these.
+	// (clamping at zero tends to make things "overpanned" --GM)
 
 	if ( volAccumL < 0.0f )
 	{
-		volAccumL = 0.0f;
+		volAccumL = -volAccumL;
 	}
 
 	if ( volAccumR < 0.0f )
 	{
-		volAccumR = 0.0f;
+		volAccumR = -volAccumR;
 	}
 
 	// And now we calculate volume and panning.
 	float maxVol = (volAccumL > volAccumR ? volAccumL : volAccumR);
 	*outLoudness = (int)(255*maxVol);
-	*outPanning = (int)(255*volAccumR/maxVol);
+
+	if ( volAccumR >= volAccumL )
+	{
+		*outPanning = (int)(255 - 127*volAccumL/volAccumR);
+	}
+	else
+	{
+		*outPanning = (int)(127*volAccumR/volAccumL);
+	}
+
+	//cerr << "convert at " << x << ", " << y << ", " << m_listenerDistance << " to " << volAccumL << ", " << volAccumR << " to V=" << *outLoudness << ", P=" << *outPanning << endl;
 }
 
 void Sfx::think()
@@ -239,8 +252,18 @@ void Sfx::think()
 		}
 		else
 		{
-			float pos[3] = { obj->second->pos.x, obj->second->pos.y, 0 };
-			//FSOUND_3D_SetAttributes(obj->first, pos, NULL);
+			if ( chanLoudness.find( obj->first ) != chanLoudness.end() )
+			{
+				float loudness = chanLoudness.at( obj->first );
+				int chanLoudness = 255*loudness/100.0f;
+				int chanPanning = 128;
+				sfx.calculateVolumes( loudness, obj->second->pos.x, obj->second->pos.y, &chanLoudness, &chanPanning );
+				const int rampTime = 2; // this was good enough for ImpulseTracker
+				voice_ramp_volume( obj->first, rampTime, chanLoudness );
+				voice_sweep_pan( obj->first, rampTime, chanPanning );
+				cerr << "sweeping vol " << chanLoudness << ", pan " << chanPanning << endl;
+				//FSOUND_3D_SetAttributes(obj->first, pos, NULL);
+			}
 		}
 	}
 
@@ -263,6 +286,7 @@ void Sfx::think()
 void Sfx::setChanObject(int chan, BaseObject* object)
 {
 	chanObject.push_back( pair< int, BaseObject* > ( chan, object ) );
+	chanPosMap.erase(chan);
 }
 
 void Sfx::setChanPos(int chan, float x, float y)
