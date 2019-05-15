@@ -261,7 +261,7 @@ void Sfx::think()
 				const int rampTime = 2; // this was good enough for ImpulseTracker
 				voice_ramp_volume( obj->first, rampTime, chanLoudness );
 				voice_sweep_pan( obj->first, rampTime, chanPanning );
-				cerr << "sweeping vol " << chanLoudness << ", pan " << chanPanning << endl;
+				//cerr << "sweeping vol " << chanLoudness << ", pan " << chanPanning << endl;
 				//FSOUND_3D_SetAttributes(obj->first, pos, NULL);
 			}
 		}
