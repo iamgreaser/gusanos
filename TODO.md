@@ -3,7 +3,7 @@ vim: set sts=2 sw=2 et :
 Important stuff:
 
 * [ ] Fix the build system
-  * [ ] Switch to single Makefile w/ no `*.a` files lying around
+  * [x] Switch to single Makefile w/ no `*.a` files lying around
   * [ ] Then switch it over to something else, possibly CMake
 
 * [ ] Fix some of the old code

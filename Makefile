@@ -25,4 +25,4 @@ $(BIN): $(OBJECTS)
 	$(CXX) -c $< -o $@ $(CFLAGS) $(DEFINES)
 
 clean:
-	rm $(OBJECTS)
+	rm -f $(OBJECTS)

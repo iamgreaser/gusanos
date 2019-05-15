@@ -1,3 +1,0 @@
-Import('env')
-
-env.StaticLibrary(env.getLibName('glua'), env.getObjects() + env.getObjects('luaapi'))
