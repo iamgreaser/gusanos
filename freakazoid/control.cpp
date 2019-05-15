@@ -39,6 +39,12 @@ void ZCom_Control::ZCom_Connect(ZCom_Address addr, ZCom_BitStream *bitStream)
 	ZCom_BitStream bs;
 	ZoidCom_debugMessage((std::string("ZCom_Connect called with IP ") + addr.getIP()).c_str());
 	// FIXME: actually attempt to connect
+
+	//bs.addInt(0, 8); // "Refused"
+	//bs.addString("default");
+	//bs.addString("poo");
+	//ZCom_cbConnectResult(ZCom_Invalid_ID, eZCom_ConnAccepted, bs);
+
 	ZCom_cbConnectionClosed(ZCom_Invalid_ID, eZCom_ClosedTimeout, bs);
 }
 

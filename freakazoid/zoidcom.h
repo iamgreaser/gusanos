@@ -139,6 +139,7 @@ public:
 	const char *getStringStatic(void);
 
 private:
+	std::vector<char *> m_staticStrings;
 	std::vector<uint8_t> m_buffer;
 	std::size_t m_bufferReadPointer;
 };

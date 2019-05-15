@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstdlib>
+//include <iostream>
 
 //
 // If we ensure that everything is byte-aligned,
@@ -17,7 +18,13 @@ ZCom_BitStream::ZCom_BitStream()
 
 ZCom_BitStream::~ZCom_BitStream()
 {
+	for (auto it = m_staticStrings.begin(); it != m_staticStrings.end(); it++)
+	{
+		free((void *)*it);
+		*it = NULL;
+	}
 
+	m_staticStrings.clear();
 }
 
 //
@@ -38,14 +45,19 @@ ZCom_BitStream::~ZCom_BitStream()
 void ZCom_BitStream::addInt(zU32 data, int bits)
 {
 	// Truncate the data to the given bit range.
-	data &= (1<<bits)-1;
+	if ( bits <= 31 )
+	{
+		data &= (1<<bits)-1;
+	}
 
 	// Encode according to bit packing.
 	while((data & ~0x7F) != 0)
 	{
+		//std::cerr << "bit pack rem " << data << std::endl;
 		m_buffer.push_back((data & 0x7F)|0x80);
 		data >>= 7;
 	}
+	//std::cerr << "bit pack end " << data << std::endl;
 	assert(0 <= data && data <= 0x7F);
 	m_buffer.push_back(data);
 }
@@ -85,8 +97,8 @@ void ZCom_BitStream::addFloat(zFloat data, int fracbits)
 // Now we have some text!
 void ZCom_BitStream::addString(std::string data)
 {
-	addInt((zU32)data.length(), 32);
-	for(std::size_t i = 0; i < data.length(); i++)
+	addInt((zU32)data.size(), 32);
+	for(std::size_t i = 0; i < data.size(); i++)
 	{
 		addInt(data[i], 8);
 	}
@@ -114,7 +126,6 @@ zU32 ZCom_BitStream::getInt(int bits)
 	assert(m_bufferReadPointer+1 <= m_buffer.size());
 	while((m_buffer[m_bufferReadPointer] & 0x80) != 0)
 	{
-		m_buffer.push_back((data & 0x7F)|0x80);
 		assert(leftShift < 28);
 		data |= (m_buffer[m_bufferReadPointer] & 0x7F) << leftShift;
 		leftShift += 7;
@@ -125,7 +136,10 @@ zU32 ZCom_BitStream::getInt(int bits)
 	m_bufferReadPointer++;
 
 	// Truncate the data to the given bit range.
-	data &= (1<<bits)-1;
+	if ( bits <= 31 )
+	{
+		data &= (1<<bits)-1;
+	}
 
 	return data;
 }
@@ -155,10 +169,37 @@ zS32 ZCom_BitStream::getSignedInt(int bits)
 
 zFloat ZCom_BitStream::getFloat(int fracbits)
 {
-	zS32 intData = getInt(32);
+	zS32 intData = getSignedInt(32);
+
+	if ( intData < 0 )
+	{
+		intData ^= 0x7FFFFFFF;
+	}
 
 	return *reinterpret_cast<zFloat *>(&intData);
 }
 
-// TODO: Add a bunch of const char*s I can use which get thrown out in the destructor
-const char *ZCom_BitStream::getStringStatic(void) { return ""; }
+const char *ZCom_BitStream::getStringStatic(void)
+{
+	std::size_t len = getInt(32);
+
+	// Don't bother allocating a zero-length string
+	if ( len == 0 )
+	{
+		ZoidCom_debugMessage((std::string("getStringStatic returned empty")).c_str());
+		return "";
+	}
+
+	// Allocate and fill
+	char *result = (char *)malloc(len+1);
+	for (std::size_t i = 0; i < len; i++)
+	{
+		result[i] = getInt(8);
+	}
+	result[len] = '\x00';
+
+	ZoidCom_debugMessage((std::string("getStringStatic returned \"") + std::string(result) + std::string("\"")).c_str());
+	m_staticStrings.push_back(result);
+
+	return result;
+}
