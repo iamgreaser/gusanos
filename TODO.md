@@ -16,6 +16,7 @@ Important stuff:
   * [ ] Get panning with multiple listeners working
 
 * [ ] Get network back up to speed
+  * [ ] Split freakazoid up into multiple cpp files
   * [ ] ???
 
 Some ideas:
