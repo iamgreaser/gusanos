@@ -31,15 +31,8 @@ Sound::~Sound()
 
 bool Sound::load(fs::path const& filename)
 {
-	// TEMPORARY MEASURE UNTIL WE GET AN ALLEGRO 4 OGG LOADER --GM
 	std::string raw_filename = filename.native();
-	std::size_t ogg_offs = raw_filename.find( ".ogg" );
-	if ( ogg_offs != std::string::npos )
-	{
-		raw_filename = raw_filename.replace( ogg_offs, 4, ".wav" );
-	}
-
-	cerr << "Loading sound: " << raw_filename << endl;
+	//cerr << "Loading sound: " << raw_filename << endl;
 	m_sound = load_sample( raw_filename.c_str() );
 	if ( m_sound )
 	{

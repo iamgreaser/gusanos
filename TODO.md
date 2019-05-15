@@ -12,7 +12,7 @@ Important stuff:
     * [ ] ???
 
 * [ ] Get audio back up to speed
-  * [ ] Get Ogg Vorbis loading working
+  * [x] Get Ogg Vorbis loading working
   * [ ] Get panning with multiple listeners working
 
 * [ ] Get network back up to speed

@@ -34,6 +34,11 @@ public:
 	void volumeChange();
 	
 	operator bool(); // Returns true if it's safe to use this object
+
+protected:
+	static SAMPLE* loadOggFile(const char *filename);
+	void registerSampleFormats();
+
 };
 
 extern Sfx sfx;

@@ -1,5 +1,7 @@
 #ifndef DEDSERV
 
+#include <allegro.h>
+
 #include "sfx.h"
 #include "gconsole.h"
 #include "base_object.h"
@@ -10,6 +12,12 @@ using namespace boost::assign;
 #include <vector>
 #include <list>
 #include <boost/utility.hpp>
+
+#include <cstring>
+#include <cstdint>
+#include <cstdio>
+#include <cassert>
+#include <vorbis/vorbisfile.h>
 
 using namespace std;
 
@@ -56,6 +64,8 @@ void Sfx::init()
 		detect_digi_driver(m_outputMode);
 		install_sound(m_outputMode, MIDI_NONE, NULL);
 	}
+
+	registerSampleFormats();
 	
 	/* We select default driver for now
 	int numDrivers = FSOUND_GetNumDrivers();
@@ -222,5 +232,102 @@ Sfx::operator bool()
 {
 	return m_initialized;
 } 
+
+SAMPLE* Sfx::loadOggFile(const char *filename)
+{
+	//cerr << "Attempting to load ogg file \"" << string(filename) << "\"" << endl;
+
+	OggVorbis_File vf;
+	int didOpen = ov_fopen(filename, &vf);
+	if( didOpen != 0 )
+	{
+		//cerr << "Error: Could not load file with libvorbisfile (error = " << didOpen << ")" << endl;
+		return NULL;
+	}
+
+	long streamCount = ov_streams(&vf);
+	if( streamCount != 1 )
+	{
+		cerr << "ERROR: Expected exactly 1 Ogg Vorbis bitstream, got " << streamCount << " instead" << endl;
+		ov_clear(&vf);
+		return NULL;
+	}
+
+	vorbis_info *vi = ov_info(&vf, 0);
+	if( !vi )
+	{
+		cerr << "ERROR: Could not fetch vorbis_info structure" << endl;
+		ov_clear(&vf);
+		return NULL;
+	}
+	if( vi->channels != 1 && vi->channels != 2 )
+	{
+		cerr << "ERROR: Only mono or stereo samples are supported, this file has " << vi->channels << " channels" << endl;
+		ov_clear(&vf);
+		return NULL;
+	}
+
+	ogg_int64_t totalSamples = ov_pcm_total(&vf, 0);
+	if( totalSamples < 0 )
+	{
+		cerr << "ERROR: Could not fetch total PCM sample count for Ogg Vorbis bitstream: " << totalSamples << endl;
+		ov_clear(&vf);
+		return NULL;
+	}
+
+	//cerr << "Vorbis version = " << vi->version << ", channels = " << vi->channels << ", rate = " << vi->rate << "Hz, samples = " << totalSamples << endl;
+
+	SAMPLE* sample = create_sample(16, (vi->channels == 2 ? 1 : 0), vi->rate, totalSamples);
+	if( !sample )
+	{
+		cerr << "ERROR: Could not create Allegro SAMPLE for Ogg Vorbis file" << endl;
+		ov_clear(&vf);
+		return NULL;
+	}
+
+	memset(sample->data, 0, totalSamples*sizeof(int16_t)*vi->channels);
+
+	int byteOffset = 0;
+	int totalBytesToRead = totalSamples*sizeof(int16_t)*vi->channels;
+	int bytesToRead = totalBytesToRead;
+	int currentBitstream = 0;
+	while(bytesToRead > 0)
+	{
+		assert(byteOffset < totalBytesToRead);
+		char *bufBase = (char *)(((uint8_t *)sample->data) + byteOffset);
+
+		//long bytesActuallyRead = ov_read(&vf, bufBase, bytesToRead, 0, 2, 1, &currentBitstream);
+		// For some reason Allegro expects unsigned samples?!
+		long bytesActuallyRead = ov_read(&vf, bufBase, bytesToRead, 0, 2, 0, &currentBitstream);
+
+		if(bytesActuallyRead < 0)
+		{
+			cerr << "ERROR: Read failed at byte offset " << byteOffset << ": " << bytesActuallyRead << endl;
+			destroy_sample(sample);
+			ov_clear(&vf);
+			return NULL;
+		}
+
+		if(bytesActuallyRead == 0)
+		{
+			// This shouldn't happen, but just
+			cerr << "WARNING: Premature EOF found at byte offset " << byteOffset << endl;
+			break;
+		}
+
+		assert((long)bytesToRead >= bytesActuallyRead);
+		bytesToRead -= (int)bytesActuallyRead;
+		byteOffset += (int)bytesActuallyRead;
+	}
+	assert(bytesToRead >= 0);
+
+	ov_clear(&vf);
+	return sample;
+}
+
+void Sfx::registerSampleFormats()
+{
+	register_sample_file_type("ogg", loadOggFile, NULL);
+}
 
 #endif
