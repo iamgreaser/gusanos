@@ -1,6 +1,6 @@
 CC= gcc
 CXX= g++
-CFLAGS= -O3 -I ./loadpng -I ./Console -I ./GUI -I ./Goop -I ./Utility -I ./freakazoid -I ./lua51 -I ./http -I ./OmfgScript `allegro-config --cflags` -DALLEGRO_NO_FIX_ALIASES=1
+CFLAGS= -O3 -flto -I ./loadpng -I ./Console -I ./GUI -I ./Goop -I ./Utility -I ./freakazoid -I ./lua51 -I ./http -I ./OmfgScript `allegro-config --cflags` -DALLEGRO_NO_FIX_ALIASES=1
 LIBS= -lpng -lz -lboost_filesystem `allegro-config --libs` -export-dynamic
 DEFINES= 
 BIN= ./gusanos
