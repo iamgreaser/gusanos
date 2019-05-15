@@ -32,22 +32,6 @@ void ZCom_Address::setAddress(eZComUnofficial_AddressType addressType, int unk00
 }
 
 
-// FIXME: ZCom_BitStream stubs
-void ZCom_BitStream::addBitStream(ZCom_BitStream* bitStream) {}
-void ZCom_BitStream::addBool(bool data) {}
-void ZCom_BitStream::addFloat(zFloat data, int fracbits) {}
-void ZCom_BitStream::addInt(zU32 data, int bits) {}
-void ZCom_BitStream::addSignedInt(zS32 data, int bits) {}
-void ZCom_BitStream::addString(std::string data) {}
-ZCom_BitStream* ZCom_BitStream::Duplicate(void) { return this; }
-bool ZCom_BitStream::getBool(void) { return false; }
-zFloat ZCom_BitStream::getFloat(int fracbits) { return 0.0f; }
-zU32 ZCom_BitStream::getInt(int bits) { return 0; }
-zS32 ZCom_BitStream::getSignedInt(int bits) { return 0; }
-const char *ZCom_BitStream::getStringStatic(void) { return ""; }
-
-
-
 // FIXME: ZCom_Node stubs
 void ZCom_Node::acceptFile(ZCom_ConnID connID, ZCom_FileTransID fileTransID, int unk003, bool actuallyAccept) {}
 void ZCom_Node::addReplicationFloat(zFloat* data, int unk002, zU32 flags, zU8 rules) {}

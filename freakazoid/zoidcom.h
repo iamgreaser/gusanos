@@ -9,6 +9,7 @@ Because the original library no longer exists.
 #include <cstdint>
 #include <map>
 #include <string>
+#include <vector>
 
 typedef uint8_t zU8;
 typedef int32_t zS32;
@@ -121,6 +122,8 @@ protected:
 class ZCom_BitStream
 {
 public:
+	ZCom_BitStream();
+	~ZCom_BitStream();
 	void addBitStream(ZCom_BitStream* bitStream);
 	void addBool(bool data);
 	void addFloat(zFloat data, int fracbits);
@@ -134,6 +137,10 @@ public:
 	zS32 getSignedInt(int bits);
 	//std::string getStringStatic(void);
 	const char *getStringStatic(void);
+
+private:
+	std::vector<uint8_t> m_buffer;
+	std::size_t m_bufferReadPointer;
 };
 
 class ZComUnofficial_ClassSettings
