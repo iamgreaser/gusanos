@@ -1,10 +1,35 @@
 // THIS FILE WILL DEFINITELY GET SPLIT UP AT SOME POINT.
+#include <cassert>
+#include <iostream>
+#include <string>
+
 #include "zoidcom.h"
 
+void dumb_logger(char const* msg)
+{
+	std::cerr << "FREAKAZOID: " << msg << std::endl;
+}
+
+void (*ZoidCom_fn_logger)(char const* msg) = dumb_logger;
+
+void ZoidCom_debugMessage(char const* msg)
+{
+	ZoidCom_fn_logger(msg);
+}
 
 // FIXME: ZCom_Address stubs
-ZComUnofficial_IP ZCom_Address::getIP(void) const { return "::1"; }
-void ZCom_Address::setAddress(eZComUnofficial_AddressType addressType, int unk002, std::string addressBody) {}
+ZComUnofficial_IP ZCom_Address::getIP(void) const
+{
+	return m_IP;
+}
+
+void ZCom_Address::setAddress(eZComUnofficial_AddressType addressType, int unk002, std::string addressBody)
+{
+	assert(addressType == eZCom_AddressUDP);
+	assert(unk002 == 0);
+	ZoidCom_debugMessage((std::string("ZCom_Address::setAddress() called with address \"") + addressBody + std::string("\"")).c_str());
+	m_IP = addressBody;
+}
 
 
 // FIXME: ZCom_BitStream stubs
@@ -21,44 +46,6 @@ zU32 ZCom_BitStream::getInt(int bits) { return 0; }
 zS32 ZCom_BitStream::getSignedInt(int bits) { return 0; }
 const char *ZCom_BitStream::getStringStatic(void) { return ""; }
 
-
-// FIXME: ZCom_Control stubs
-void ZCom_Control::Shutdown(void) {}
-void ZCom_Control::ZCom_Connect(ZCom_Address addr, ZCom_BitStream *bitStream) {}
-void ZCom_Control::ZCom_Disconnect(ZCom_ConnID connID, ZCom_BitStream* bitStream) {}
-void ZCom_Control::ZCom_disconnectAll(ZCom_BitStream* bitStream) {}
-
-ZComUnofficial_ConnectionStats ZCom_Control::ZCom_getConnectionStats(ZCom_ConnID connID)
-{
-	ZComUnofficial_ConnectionStats result;
-	result.avg_ping = 350;
-	return result;
-}
-
-const ZCom_Address* ZCom_Control::ZCom_getPeer(ZCom_ConnID connID) { return NULL; }
-
-ZCom_FileTransInfo ZCom_Node::getFileInfo(ZCom_ConnID connID, ZCom_FileTransID fileTransID)
-{
-	ZCom_FileTransInfo result;
-	result.path = "lol";
-	result.bps = 56000.0f;
-	result.transferred = 42;
-	result.size = 100;
-	return result;
-}
-
-bool ZCom_Control::ZCom_initSockets(bool unk001, int udpPort, int unk003, int unk004) { return true; }
-void ZCom_Control::ZCom_processInput(eZComUnofficial_BlockingType blockingType) {}
-void ZCom_Control::ZCom_processOutput(void) {}
-ZCom_ClassID ZCom_Control::ZCom_registerClass(std::string className, int classFlags) { return ZCom_Invalid_ID; }
-void ZCom_Control::ZCom_requestDownstreamLimit(ZCom_ConnID connID, int bpp, int pps) {}
-void ZCom_Control::ZCom_requestZoidMode(ZCom_ConnID connID, int unk002) {}
-void ZCom_Control::ZCom_sendData(ZCom_NodeID nodeID, ZCom_BitStream* bitStream, eZCom_SendMode sendMode) {}
-void ZCom_Control::ZCom_setControlID(int unk001) {}
-void ZCom_Control::ZCom_setDebugName(std::string name) {}
-void ZCom_Control::ZCom_setUpstreamLimit(int bpp, int pps) {}
-void ZCom_Control::ZCom_simulateLag(int unk001, float lag) {}
-void ZCom_Control::ZCom_simulateLoss(int unk001, float loss) {}
 
 
 // FIXME: ZCom_Node stubs
@@ -107,7 +94,30 @@ ZCom_InterceptID ZCom_ReplicatorSetup::getInterceptID(void) { return ZCom_Invali
 
 
 // FIXME: ZoidCom stubs
-ZoidCom::ZoidCom() {}
-ZoidCom::ZoidCom(void (*fn_logger)(char const* msg)) {}
-bool ZoidCom::Init(void) { return true; }
-void ZoidCom::setLogLevel(int level) {}
+ZoidCom::ZoidCom()
+{
+	std::cerr << "freakazoid called w/o debug logger callback" << std::endl;
+}
+
+ZoidCom::ZoidCom(void (*fn_logger)(char const* msg))
+{
+	std::cerr << "freakazoid called with a debug logger callback" << std::endl;
+	ZoidCom_fn_logger = fn_logger;
+}
+
+ZoidCom::~ZoidCom()
+{
+	ZoidCom_debugMessage("ZoidCom destructor called");
+}
+
+bool ZoidCom::Init(void)
+{
+	ZoidCom_debugMessage("Init called");
+
+	return true;
+}
+
+void ZoidCom::setLogLevel(int level)
+{
+	ZoidCom_debugMessage((std::string("Set log level to ") + std::to_string(level)).c_str());
+}

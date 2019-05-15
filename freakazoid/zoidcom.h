@@ -7,6 +7,7 @@ Because the original library no longer exists.
 #ifndef _FREAKAZOID_ZOIDCOM_H
 #define _FREAKAZOID_ZOIDCOM_H
 #include <cstdint>
+#include <map>
 #include <string>
 
 typedef uint8_t zU8;
@@ -19,6 +20,9 @@ typedef int32_t ZCom_ConnID;
 typedef int32_t ZCom_FileTransID;
 typedef int32_t ZCom_InterceptID;
 typedef int32_t ZCom_NodeID;
+
+// not a public API, but one added specifically for Freakazoid
+void ZoidCom_debugMessage(char const* msg);
 
 #define ZCOM_FTRANS_ID_BITS 32
 
@@ -109,6 +113,9 @@ class ZCom_Address
 public:
 	ZComUnofficial_IP getIP(void) const;
 	void setAddress(eZComUnofficial_AddressType addressType, int unk002, std::string addressBody);
+
+protected:
+	std::string m_IP;
 };
 
 class ZCom_BitStream
@@ -129,9 +136,19 @@ public:
 	const char *getStringStatic(void);
 };
 
+class ZComUnofficial_ClassSettings
+{
+public:
+	~ZComUnofficial_ClassSettings();
+	std::string className;
+	int classFlags;
+};
+
 class ZCom_Control
 {
 public:
+	ZCom_Control();
+	~ZCom_Control();
 	void Shutdown(void);
 	void ZCom_Connect(ZCom_Address addr, ZCom_BitStream *bitStream);
 	void ZCom_Disconnect(ZCom_ConnID connID, ZCom_BitStream* bitStream);
@@ -150,6 +167,22 @@ public:
 	void ZCom_setUpstreamLimit(int bpp, int pps);
 	void ZCom_simulateLag(int unk001, float lag);
 	void ZCom_simulateLoss(int unk001, float loss); // For the record, this game is older than Loss. --GM
+
+	virtual void ZCom_cbConnectionClosed( ZCom_ConnID _id, eZCom_CloseReason _reason, ZCom_BitStream &_reasondata ) {}
+	virtual bool ZCom_cbConnectionRequest( ZCom_ConnID  _id, ZCom_BitStream &_request, ZCom_BitStream &_reply ){return false;}
+	virtual void ZCom_cbConnectionSpawned( ZCom_ConnID _id ) {}
+	virtual void ZCom_cbConnectResult( ZCom_ConnID _id, eZCom_ConnectResult _result, ZCom_BitStream &_reply ) {}
+	virtual void ZCom_cbDataReceived( ZCom_ConnID id, ZCom_BitStream &data) {}
+	virtual void ZCom_cbDiscovered( const ZCom_Address & _addr, ZCom_BitStream &_reply )  {}
+	virtual bool ZCom_cbDiscoverRequest( const ZCom_Address &_addr, ZCom_BitStream &_request, ZCom_BitStream &_reply ) {return false;}
+	virtual void ZCom_cbNodeRequest_Dynamic( ZCom_ConnID _id, ZCom_ClassID _requested_class, ZCom_BitStream *_announcedata, eZCom_NodeRole _role, ZCom_NodeID _net_id ) {}
+	virtual void ZCom_cbNodeRequest_Tag( ZCom_ConnID _id, ZCom_ClassID _requested_class, ZCom_BitStream *_announcedata, eZCom_NodeRole _role, zU32 _tag ) {}
+	virtual bool ZCom_cbZoidRequest( ZCom_ConnID _id, zU8 _requested_level, ZCom_BitStream &_reason ) {return false;}
+	virtual void ZCom_cbZoidResult(ZCom_ConnID _id, eZCom_ZoidResult _result, zU8 _new_level, ZCom_BitStream &_reason) {}
+
+protected:
+	std::map<ZCom_ClassID, ZComUnofficial_ClassSettings*> classIDMap;
+	std::map<std::string, ZCom_ClassID> classNameToIDMap;
 };
 
 class ZCom_FileTransInfo
@@ -237,10 +270,10 @@ class ZoidCom
 public:
 	ZoidCom();
 	ZoidCom(void (*fn_logger)(char const* msg));
+	~ZoidCom();
 
 	bool Init(void);
 	void setLogLevel(int level);
-private:
 };
 
 #endif /* ifdef _FREAKAZOID_ZOIDCOM_H */
