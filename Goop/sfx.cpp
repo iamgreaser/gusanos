@@ -45,6 +45,7 @@ void Sfx::init()
 	// Select a driver
 	
 	//FSOUND_SetOutput(m_outputMode);
+	reserve_voices(64, 0);
 	if(m_outputMode == -1)
 	{
 		detect_digi_driver(DIGI_AUTODETECT);
