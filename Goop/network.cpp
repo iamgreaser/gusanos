@@ -30,7 +30,9 @@ using namespace boost::assign;
 
 using namespace std;
 
-int const Network::protocolVersion = 2;
+// Gusanos 0.9c uses version 2
+// There may have been a version 3 at some point so let's bump it up a few notches just to be safe
+int const Network::protocolVersion = 9;
 
 LuaReference LuaEventDef::metaTable;
 
