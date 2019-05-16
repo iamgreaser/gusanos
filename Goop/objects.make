@@ -55,7 +55,7 @@ Goop/sprite_set.o \
 Goop/stl_str_replicator.o \
 Goop/timer_event.o \
 Goop/updater.o \
-Goop/vector_repliactor.o \
+Goop/vector_replicator.o \
 Goop/viewport.o \
 Goop/weapon.o \
 Goop/weapon_type.o \

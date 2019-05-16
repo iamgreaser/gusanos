@@ -8,22 +8,16 @@
 #include <utility>
 #include <stdexcept>
 
-#define COMPACT_FLOATS
-
 class VectorReplicator : public ZCom_ReplicatorBasic
 {
 private:
 	
 	Vec*	m_ptr;
-#ifdef COMPACT_FLOATS
-	std::pair<long, long> m_old;
-#else
 	Vec	m_cmp;
-#endif
-	
+
 public:
 
-	VectorReplicator(ZCom_ReplicatorSetup *_setup, Vec *_data, Encoding::VectorEncoding& encoding_);
+	VectorReplicator(ZCom_ReplicatorSetup *_setup, Vec *_data);
 	
 	// TODO: Implement this for safeness sake
 	ZCom_Replicator* Duplicate(ZCom_Replicator *_dest)
@@ -52,7 +46,6 @@ public:
 	//const Vec& getLastUpdate();
 	
 private:
-	Encoding::VectorEncoding& encoding;
 };
 
 #endif

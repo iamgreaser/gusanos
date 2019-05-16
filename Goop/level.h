@@ -166,9 +166,9 @@ class Level
 	BITMAP* watermap; // How water looks in each pixel of the map
 #endif
 	BITMAP* material;
-	Encoding::VectorEncoding vectorEncoding;
-	Encoding::VectorEncoding intVectorEncoding;
-	Encoding::DiffVectorEncoding diffVectorEncoding;
+	//Encoding::VectorEncoding vectorEncoding;
+	//Encoding::VectorEncoding intVectorEncoding;
+	//Encoding::DiffVectorEncoding diffVectorEncoding;
 	
 	struct ParticleBlockPredicate
 	{

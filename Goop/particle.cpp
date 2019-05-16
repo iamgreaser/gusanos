@@ -60,7 +60,7 @@ public:
 	void outPreReplicateNode(ZCom_Node *_node, ZCom_ConnID _to, eZCom_NodeRole _remote_role)
 	{
 		ZCom_BitStream *type = new ZCom_BitStream;
-		Encoding::encode(*type, parent->m_type->getIndex(), partTypeList.size());
+		type->addInt(parent->m_type->getIndex(), 16);
 		if(parent->m_owner)
 			type->addInt(parent->m_owner->getNodeID(), 32);
 		else
@@ -183,7 +183,7 @@ void Particle::assignNetworkRole( bool authority )
 	
 		static ZCom_ReplicatorSetup posSetup( ZCOM_REPFLAG_MOSTRECENT | ZCOM_REPFLAG_INTERCEPT, ZCOM_REPRULE_AUTH_2_ALL, ParticleInterceptor::Position, -1, 1000);
 		
-		m_node->addReplicator(new PosSpdReplicator( &posSetup, &pos, &spd, game.level.vectorEncoding, game.level.diffVectorEncoding ), true);
+		m_node->addReplicator(new PosSpdReplicator( &posSetup, &pos, &spd ), true);
 		
 	m_node->endReplicationSetup();
 	

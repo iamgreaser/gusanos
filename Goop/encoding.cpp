@@ -3,6 +3,7 @@
 using std::cerr;
 using std::endl;
 
+#if 0
 namespace Encoding
 {
 
@@ -29,3 +30,4 @@ DiffVectorEncoding::DiffVectorEncoding(int subPixelAcc_)
 }
 
 }
+#endif

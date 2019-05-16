@@ -112,7 +112,7 @@ void Weapon::think( bool isFocused, size_t index )
 					if ( m_owner->getRole() == eZCom_RoleAuthority && m_type->syncHax )
 					{
 						ZCom_BitStream* data = new ZCom_BitStream;
-						Encoding::encode(*data, SHOOT, EventsCount);
+						data->addInt(SHOOT, 8);
 						m_owner->sendWeaponMessage( index, data, ZCOM_REPRULE_AUTH_2_PROXY );
 						delete data;
 					}
@@ -133,8 +133,7 @@ void Weapon::think( bool isFocused, size_t index )
 				if ( network.isHost() && m_type->syncReload )
 				{
 					ZCom_BitStream* data = new ZCom_BitStream;
-					//data->addInt( OUTOFAMMO , 8);
-					Encoding::encode(*data, OUTOFAMMO, EventsCount);
+					data->addInt( OUTOFAMMO , 8);
 					m_owner->sendWeaponMessage( index, data );
 					delete data;
 					sentOutOfAmmo = true;
@@ -143,7 +142,7 @@ void Weapon::think( bool isFocused, size_t index )
 			else
 			{
 				ZCom_BitStream* data = new ZCom_BitStream;
-				Encoding::encode(*data, OutOfAmmoCheck, EventsCount);
+				data->addInt(OutOfAmmoCheck, 8);
 				m_owner->sendWeaponMessage( index, data, ZCOM_REPRULE_OWNER_2_AUTH );
 				delete data;
 				//std::cout << "sent check plz message" << endl;
@@ -159,8 +158,7 @@ void Weapon::think( bool isFocused, size_t index )
 				if ( network.isHost() && m_type->syncReload )
 				{
 					ZCom_BitStream* data = new ZCom_BitStream;
-					//data->addInt( RELOADED , 8);
-					Encoding::encode(*data, RELOADED, EventsCount);
+					data->addInt( RELOADED , 8);
 					m_owner->sendWeaponMessage( index, data );
 					delete data;
 				}
@@ -176,8 +174,8 @@ void Weapon::think( bool isFocused, size_t index )
 		{
 			//std::cout << "Sending correction" << endl;
 			ZCom_BitStream* data = new ZCom_BitStream;
-			Encoding::encode(*data, AmmoCorrection, EventsCount);
-			Encoding::encode(*data, ammo, m_type->ammo+1);
+			data->addInt(AmmoCorrection, 8);
+			data->addInt(ammo, 32);
 			m_owner->sendWeaponMessage(index, data, ZCOM_REPRULE_AUTH_2_OWNER );
 		}
 		else
@@ -236,7 +234,7 @@ void Weapon::drawTop(BITMAP* where,int x, int y)
 
 void Weapon::recieveMessage( ZCom_BitStream* data )
 {
-	Events event = static_cast<Events>(Encoding::decode(*data, EventsCount));
+	Events event = static_cast<Events>(data->getInt(8));
 	switch ( event )
 	{
 		case OUTOFAMMO:
@@ -266,7 +264,7 @@ void Weapon::recieveMessage( ZCom_BitStream* data )
 		
 		case AmmoCorrection:
 		{
-			ammo = Encoding::decode(*data, m_type->ammo+1);
+			ammo = data->getInt(32);
 			m_outOfAmmo = false;
 		}
 		

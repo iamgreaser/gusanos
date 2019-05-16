@@ -28,9 +28,6 @@ struct LuaEventDef;
 // should pass by the BasePlayer class ( This is because the BasePlayer
 // class will be responsible of the network part )
 
-#define COMPACT_EVENTS
-#define COMPACT_ACTIONS
-
 class BasePlayer
 {
 public:

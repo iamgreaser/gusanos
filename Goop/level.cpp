@@ -159,7 +159,7 @@ void Level::unload()
 #endif
 	destroy_bitmap(material); material = NULL;
 
-	vectorEncoding = Encoding::VectorEncoding();
+	//vectorEncoding = Encoding::VectorEncoding();
 }
 
 bool Level::isLoaded()
@@ -534,9 +534,9 @@ void Level::loaderSucceeded()
 #endif
 	// Make the domain one pixel larger than the level so that things like ninjarope hook
 	// can get slightly outside the level and attach.
-	vectorEncoding = Encoding::VectorEncoding(Rect(-1, -1, width() + 1, height() + 1), 2048);
-	intVectorEncoding = Encoding::VectorEncoding(Rect(-1, -1, width() + 1, height() + 1), 1);
-	diffVectorEncoding = Encoding::DiffVectorEncoding(1024);
+	//vectorEncoding = Encoding::VectorEncoding(Rect(-1, -1, width() + 1, height() + 1), 2048);
+	//intVectorEncoding = Encoding::VectorEncoding(Rect(-1, -1, width() + 1, height() + 1), 1);
+	//diffVectorEncoding = Encoding::DiffVectorEncoding(1024);
 	//cerr << "vectorEncoding: " << vectorEncoding.totalBits() << endl;
 	
 	if(!m_config)

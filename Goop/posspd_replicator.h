@@ -8,8 +8,6 @@
 #include <utility>
 #include <stdexcept>
 
-#define COMPACT_FLOATS
-
 class PosSpdReplicator : public ZCom_ReplicatorBasic
 {
 	private:
@@ -22,16 +20,11 @@ class PosSpdReplicator : public ZCom_ReplicatorBasic
 		
 		int m_repCount;
 
-#ifdef COMPACT_FLOATS
-	std::pair<long, long> m_oldPos;
-#else
-	Vec	m_cmpPos;
-#endif
-	
-	
+	Vec	m_posCmp;
+
 	public:
 
-		PosSpdReplicator(ZCom_ReplicatorSetup *_setup, Vec *pos, Vec *spd, Encoding::VectorEncoding& encoding_, Encoding::DiffVectorEncoding& diffEncoding_);
+		PosSpdReplicator(ZCom_ReplicatorSetup *_setup, Vec *pos, Vec *spd);
 	
 	// TODO: Implement this for safeness sake
 		ZCom_Replicator* Duplicate(ZCom_Replicator *_dest)
@@ -60,8 +53,6 @@ class PosSpdReplicator : public ZCom_ReplicatorBasic
 	//const Vec& getLastUpdate();
 	
 	private:
-		Encoding::VectorEncoding& encoding;
-		Encoding::DiffVectorEncoding& diffEncoding;
 };
 
 #endif

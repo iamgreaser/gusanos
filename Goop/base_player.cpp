@@ -122,12 +122,7 @@ void BasePlayer::removeWorm()
 
 void BasePlayer::addEvent(ZCom_BitStream* data, BasePlayer::NetEvents event)
 {
-#ifdef COMPACT_EVENTS
-//	data->addInt(event, Encoding::bitsOf(BasePlayer::EVENT_COUNT - 1));
-	Encoding::encode(*data, event, BasePlayer::EVENT_COUNT);
-#else
 	data->addInt(static_cast<int>(event),8 );
-#endif
 }
 
 void BasePlayer::think()
@@ -147,20 +142,12 @@ void BasePlayer::think()
 				case eZCom_EventUser:
 				if ( data )
 				{
-#ifdef COMPACT_EVENTS
-					NetEvents event = (NetEvents)data->getInt(Encoding::bitsOf(EVENT_COUNT - 1));
-#else
 					NetEvents event = (NetEvents)data->getInt(8);
-#endif
 					switch ( event )
 					{
 						case ACTION_START: // ACTION TART LOL TBH
 						{
-#ifdef COMPACT_ACTIONS
-							BaseActions action = (BaseActions)data->getInt(Encoding::bitsOf(ACTION_COUNT - 1));
-#else
 							BaseActions action = (BaseActions)data->getInt(8);
-#endif
 							if ( ( action == FIRE ) && m_worm)
 							{
 								m_worm->aimAngle = Angle((int)data->getInt(Angle::prec));
@@ -181,11 +168,7 @@ void BasePlayer::think()
 						break;
 						case ACTION_STOP:
 						{
-#ifdef COMPACT_ACTIONS
-							BaseActions action = (BaseActions)data->getInt(Encoding::bitsOf(ACTION_COUNT - 1));
-#else
 							BaseActions action = (BaseActions)data->getInt(8);
-#endif
 							baseActionStop(action);
 						}
 						break;
@@ -226,14 +209,16 @@ void BasePlayer::think()
 						
 						case SELECT_WEAPONS:
 						{
-							size_t size = Encoding::decode(*data, game.options.maxWeapons+1);
+							size_t size = data->getInt(16);
 							if(size > game.options.maxWeapons)
 								break; // Avoid horrible crashes etc.
 								
 							vector<WeaponType*> weaps(size,0);
 							for ( size_t i = 0; i < size; ++i )
 							{
-								weaps[i] = game.weaponList[Encoding::decode(*data, game.weaponList.size())];
+								int idx = data->getInt(16);
+								assert(0 <= idx && idx < game.weaponList.size());
+								weaps[i] = game.weaponList[idx];
 							}
 							selectWeapons(weaps);
 						}
@@ -344,21 +329,13 @@ void BasePlayer::sendLuaEvent(LuaEventDef* event, eZCom_SendMode mode, zU8 rules
 void BasePlayer::addActionStart(ZCom_BitStream* data, BasePlayer::BaseActions action)
 {
 	addEvent(data, BasePlayer::ACTION_START);
-#ifdef COMPACT_ACTIONS
-	data->addInt(action, Encoding::bitsOf(BasePlayer::ACTION_COUNT - 1));
-#else
 	data->addInt(static_cast<int>(action),8 );
-#endif
 }
 
 void BasePlayer::addActionStop(ZCom_BitStream* data, BasePlayer::BaseActions action)
 {
 	addEvent(data, BasePlayer::ACTION_STOP);
-#ifdef COMPACT_ACTIONS
-	data->addInt(action, Encoding::bitsOf(BasePlayer::ACTION_COUNT - 1));
-#else
 	data->addInt(static_cast<int>(action),8 );
-#endif
 }
 
 bool nameIsTaken( const std::string& name )
@@ -521,10 +498,10 @@ void BasePlayer::selectWeapons( vector< WeaponType* > const& weaps )
 		ZCom_BitStream *data = new ZCom_BitStream;
 		addEvent(data, SELECT_WEAPONS );
 		
-		Encoding::encode(*data, weaps.size(), game.options.maxWeapons+1 );
+		data->addInt(weaps.size(), 16);
 		for( vector<WeaponType*>::const_iterator iter = weaps.begin(); iter != weaps.end(); ++iter )
 		{
-			Encoding::encode(*data, (*iter)->getIndex(), game.weaponList.size());
+			data->addInt((*iter)->getIndex(), 16);
 		}
 		m_node->sendEvent(eZCom_ReliableOrdered, ZCOM_REPRULE_OWNER_2_AUTH, data);
 	}

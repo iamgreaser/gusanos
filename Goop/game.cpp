@@ -80,7 +80,7 @@ namespace
 	
 	void addEvent(ZCom_BitStream* data, NetEvents event)
 	{
-		Encoding::encode( *data, static_cast<int>(event), NetEventsCount );
+		data->addInt(static_cast<int>(event), 8);
 	}
 	
 	std::list<LevelEffectEvent> appliedLevelEffects;
@@ -582,13 +582,15 @@ void Game::think()
 			case eZCom_EventUser:
 			if ( data )
 			{
-				NetEvents event = (NetEvents)Encoding::decode(*data, NetEventsCount);
+				NetEvents event = (NetEvents)(data->getInt(8));
 				switch ( event )
 				{
 					case eHole:
 					{
-						int index = Encoding::decode(*data, levelEffectList.size());
-						BaseVec<int> v = level.intVectorEncoding.decode<BaseVec<int> >(*data);
+						int index = data->getInt(16);
+						float vx = data->getSignedInt(32);
+						float vy = data->getSignedInt(32);
+						BaseVec<int> v = BaseVec<int>(vx, vy);
 						level.applyEffect( levelEffectList[index], v.x, v.y );
 					}
 					break;
@@ -639,9 +641,10 @@ void Game::think()
 				{
 					ZCom_BitStream *data = new ZCom_BitStream;
 					addEvent(data, eHole);
-					Encoding::encode(*data, iter->index, levelEffectList.size());
-					level.intVectorEncoding.encode(*data, BaseVec<int>(iter->x, iter->y));
-					
+					data->addInt(iter->index, 16);
+					data->addSignedInt(iter->x, 32);
+					data->addSignedInt(iter->y, 32);
+
 					m_node->sendEventDirect(eZCom_ReliableOrdered, data, conn_id );
 				}
 				
@@ -664,8 +667,9 @@ void Game::applyLevelEffect( LevelEffect* effect, int x, int y )
 			ZCom_BitStream *data = new ZCom_BitStream;
 
 			addEvent(data, eHole);
-			Encoding::encode(*data, effect->getIndex(), levelEffectList.size());
-			level.intVectorEncoding.encode(*data, BaseVec<int>(x, y));
+			data->addInt(effect->getIndex(), 16);
+			data->addSignedInt(x, 32);
+			data->addSignedInt(y, 32);
 
 			m_node->sendEvent(eZCom_ReliableOrdered, ZCOM_REPRULE_AUTH_2_ALL, data);
 			

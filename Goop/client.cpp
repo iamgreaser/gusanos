@@ -217,7 +217,7 @@ void Client::ZCom_cbConnectionClosed(ZCom_ConnID _id, eZCom_CloseReason _reason,
 
 void Client::ZCom_cbDataReceived( ZCom_ConnID id, ZCom_BitStream& data) 
 {
-	int event = Encoding::decode(data, Network::ClientEvents::Max);
+	int event = data.getInt(8);
 	switch(event)
 	{
 		case Network::ClientEvents::LuaEvents:
@@ -283,7 +283,7 @@ void Client::ZCom_cbNodeRequest_Dynamic( ZCom_ConnID _id, ZCom_ClassID _requeste
 		}
 	}else if( _requested_class == Particle::classID )
 	{
-		int typeIndex = Encoding::decode(*_announcedata, partTypeList.size());
+		int typeIndex = _announcedata->getInt(16);
 		BasePlayer* owner = game.findPlayerWithID(_announcedata->getInt(32));
 		newParticle_requested(partTypeList[typeIndex], Vec(), Vec(), 1, owner, Angle());
 	}else

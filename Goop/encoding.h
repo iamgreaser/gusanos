@@ -11,6 +11,7 @@
 using std::cerr;
 using std::endl;
 
+#if 0
 namespace Encoding
 {
 	
@@ -214,4 +215,5 @@ struct DiffVectorEncoding
 
 }
 
+#endif
 #endif //GUSANOS_ENCODING_H

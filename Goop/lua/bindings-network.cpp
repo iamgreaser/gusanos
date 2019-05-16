@@ -216,6 +216,7 @@ METHODC(ZCom_BitStream, bitStream_undump,
 /*! Bitstream:encode_elias_gamma(value)
 	
 	Adds an integer above or equal to 1 encoded using the elias gamma universal encoding.
+	NOTE: The netcode has been simplified a bit, so this actually packs it as an unsigned int instead.
 */
 METHODC(ZCom_BitStream, bitStream_encodeEliasGamma,
 	int v = lua_tointeger(context, 2);
@@ -224,7 +225,7 @@ METHODC(ZCom_BitStream, bitStream_encodeEliasGamma,
 		WLOG("Number " << v << " can't be encoded with elias gamma. Encoded as 1.");
 		v = 1;
 	}
-	Encoding::encodeEliasGamma(*p, static_cast<unsigned int>(v));
+	p->addInt(static_cast<unsigned int>(v), 32);
 	context.pushvalue(1);
 	return 1;
 )
@@ -232,9 +233,10 @@ METHODC(ZCom_BitStream, bitStream_encodeEliasGamma,
 /*! Bitstream:decode_elias_gamma()
 	
 	Extracts an integer above or equal to 1 encoded using the elias gamma universal encoding.
+	NOTE: The netcode has been simplified a bit, so this actually unpacks an unsigned int instead.
 */
 METHODC(ZCom_BitStream, bitStream_decodeEliasGamma,
-	context.push(Encoding::decodeEliasGamma(*p));
+	context.push(p->getInt(32));
 	return 1;
 )
 
