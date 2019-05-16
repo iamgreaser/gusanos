@@ -9,7 +9,6 @@ Goop/base_worm.o \
 Goop/client.o \
 Goop/detect_event.o \
 Goop/distortion.o \
-Goop/encoding.o \
 Goop/events.o \
 Goop/exp_type.o \
 Goop/explosion.o \

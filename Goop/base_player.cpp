@@ -5,7 +5,6 @@
 #include "player_options.h"
 #include "objects_list.h"
 #include "gconsole.h"
-#include "encoding.h"
 #include "weapon_type.h"
 #include "util/log.h"
 

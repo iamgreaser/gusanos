@@ -14,7 +14,6 @@
 #include "network.h"
 #include "vector_replicator.h"
 #include "posspd_replicator.h"
-#include "encoding.h"
 #include "gconsole.h"
 
 #include <math.h>

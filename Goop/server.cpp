@@ -10,7 +10,6 @@
 #include "util/math_func.h"
 #include "util/macros.h"
 #include "util/log.h"
-#include "encoding.h"
 
 #ifndef DISABLE_ZOIDCOM
 

@@ -8,7 +8,6 @@
 #include "updater.h"
 #include "network.h"
 #include "player_options.h"
-#include "encoding.h"
 #include "updater.h"
 #include <memory>
 #include "util/log.h"

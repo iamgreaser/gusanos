@@ -4,7 +4,6 @@
 #include <zoidcom.h>
 
 #include "util/vec.h"
-#include "encoding.h"
 #include <utility>
 #include <stdexcept>
 

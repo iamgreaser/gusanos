@@ -9,7 +9,6 @@
 #include "../base_player.h"
 #include "../base_worm.h"
 #include "../particle.h"
-#include "../encoding.h"
 #include "sockets.h"
 #include "util/log.h"
 #include "tcp.h"

@@ -4,9 +4,8 @@
 #include "material.h"
 #include "resource_locator.h"
 #include "util/math_func.h"
+#include "util/vec.h"
 //#include "sprite.h"
-
-#include "encoding.h"
 
 #include <allegro.h>
 #include <string>

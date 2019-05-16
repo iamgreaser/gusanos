@@ -3,7 +3,6 @@
 #include <zoidcom.h>
 #include <iostream>
 #include "util/vec.h"
-#include "encoding.h"
 #include <utility>
 using std::cerr;
 using std::endl;
