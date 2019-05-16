@@ -26,3 +26,17 @@ Some ideas:
 * [ ] Use SDL2 instead of Allegro 4 as it's more common these days
   * If this is done and we're still using Allegro audio, we'd need to switch to SDL\_Mixer OR implement the whole mixing stuff ourselves. I'd rather go with OpenAL to be honest, as Gusanos tends to take advantage of 3D audio.
 
+Ideas for the next version:
+
+* [ ] Move syntax to Lisp (it's easier to parse so we can cut our codebase back a bit, and we could potentially be able to capture state better than we can with Lua) and add a few converters written in Python
+  * [ ] GSS:
+    * [ ] Interpreter
+    * [ ] Converter
+  * [ ] OmfgScript:
+    * [ ] Interpreter
+    * [ ] Converter
+  * [ ] Lua:
+    * [ ] Interpreter
+    * [ ] Somehow convert what's there
+      * Lua 5.1's syntax may fit onto a single A4 page, but it's not actually that easy to parse.
+
