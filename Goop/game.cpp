@@ -722,10 +722,10 @@ void Game::loadMod(bool doLoadWeapons)
 	digObject = partTypeList.load("wormdig.obj");
 #ifndef DEDSERV
 	chatSound = sound1DList.load("chat.ogg");
-	if (!chatSound)
-		sound1DList.load("chat.wav");
 	infoFont = fontLocator.load("minifont");
+	assert( infoFont != NULL );
 #endif
+	assert( NRPartType != NULL || !"by the way, this is for the ninjarope object" );
 	if(doLoadWeapons)
 	{
 		loadWeapons();

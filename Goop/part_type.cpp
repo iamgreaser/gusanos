@@ -592,6 +592,11 @@ void PartType::finalize()
 #ifndef DEDSERV
 BaseAnimator* PartType::allocateAnimator()
 {
+	if ( sprite == NULL )
+	{
+		return NULL;
+	}
+
 	switch ( animType )
 	{
 		case PartType::ANIM_PINGPONG : 
@@ -607,7 +612,7 @@ BaseAnimator* PartType::allocateAnimator()
 		break;
 	}
 	
-	return 0;
+	return NULL;
 }
 #endif
 

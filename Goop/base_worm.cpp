@@ -55,6 +55,8 @@ BaseWorm::BaseWorm()
 #ifndef DEDSERV
 	skin = spriteList.load("skin");
 	skinMask = spriteList.load("skin-mask");
+	assert( skin != NULL );
+	assert( skinMask != NULL );
 	m_animator = new AnimLoopRight(skin,35);
 
 	m_fireconeTime = 0;
