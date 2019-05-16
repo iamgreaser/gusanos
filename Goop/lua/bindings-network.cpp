@@ -9,9 +9,9 @@
 #include "../base_player.h"
 #include "../base_worm.h"
 #include "../particle.h"
-#include "sockets.h"
+#include "util/sockets.h"
 #include "util/log.h"
-#include "tcp.h"
+#include "util/tcp.h"
 
 #include <iostream>
 #include <memory>
@@ -130,18 +130,18 @@ int l_tcp_connect(lua_State* L)
 	
 	sockaddr_in server;
 	
-	std::auto_ptr<TCP::Hostent> hp(TCP::resolveHost( addr ));
+	std::auto_ptr<Sockets::Hostent> hp(Sockets::resolveHost( addr ));
 	
 	if(!hp.get())
 		return 0;
 	
-    TCP::createAddr(server, hp.get(), port);
+    Sockets::createAddr(server, hp.get(), port);
     
     int s;
-    if((s = TCP::socketNonBlock()) < 0)
+    if((s = Sockets::socketNonBlock()) < 0)
     	return 0;
     	
-    if(!TCP::connect(s, server))
+    if(!Sockets::connect(s, server))
     	return 0;
 
 	void* space = lua_newuserdata(context, sizeof(LuaSocket));

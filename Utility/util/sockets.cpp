@@ -1,8 +1,8 @@
 #include <cstring>
 
-#include "sockets.h"
+#include "util/sockets.h"
 
-namespace TCP
+namespace Sockets
 {
 
 char* copyCString(char* p)
@@ -104,21 +104,6 @@ int socketNonBlock()
 	return s;
 }
 
-bool connect(int s, sockaddr_in& addr)
-{
-	int r = connect(s, reinterpret_cast<sockaddr *>(&addr), sizeof(addr));
-	
-	if(r == -1 &&
-	#ifdef WINDOWS
-		sockError() != EWOULDBLOCK)
-	#else
-		sockError() != EINPROGRESS)
-	#endif
-		return false; // ERROR
-		
-	return true;
-}
-
 bool createAddr(sockaddr_in& addr, hostent* hp, int port)
 {
 	memset((char *) &addr, 0, sizeof(addr));
@@ -127,6 +112,21 @@ bool createAddr(sockaddr_in& addr, hostent* hp, int port)
     addr.sin_port = htons( port );
     
     return true;
+}
+
+bool connect(int s, sockaddr_in& addr)
+{
+	int r = connect(s, reinterpret_cast<sockaddr *>(&addr), sizeof(addr));
+
+	if(r == -1 &&
+#ifdef WINDOWS
+			sockError() != EWOULDBLOCK)
+#else
+			sockError() != EINPROGRESS)
+#endif
+		return false; // ERROR
+
+	return true;
 }
 
 }

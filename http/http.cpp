@@ -1,5 +1,5 @@
 #include "http.h"
-#include "sockets.h"
+#include "util/sockets.h"
 
 #include <cstdio>
 #include <cctype>
@@ -257,17 +257,17 @@ Request* Host::query(
 	{
 		options.changed = false;
 		delete hp; hp = 0;
-		if(!(hp = TCP::resolveHost( (options.hasProxy ? options.proxy : host) )))
+		if(!(hp = Sockets::resolveHost( (options.hasProxy ? options.proxy : host) )))
 			return 0;
 	}
 	
-    TCP::createAddr(server, hp, options.hasProxy ? options.proxyPort : port);
+    Sockets::createAddr(server, hp, options.hasProxy ? options.proxyPort : port);
     
     int s;
-    if((s = TCP::socketNonBlock()) < 0)
+    if((s = Sockets::socketNonBlock()) < 0)
     	return 0;
     	
-    if(!TCP::connect(s, server))
+    if(!Sockets::connect(s, server))
     	return 0;
     
 	std::stringstream ss;

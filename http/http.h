@@ -4,7 +4,7 @@
 #include <string>
 #include <list>
 #include <utility>
-#include "tcp.h"
+#include "util/tcp.h"
 
 #define HAS_ZOIDCOM
 
@@ -12,7 +12,7 @@
 #include <zoidcom.h>
 #endif
 
-namespace TCP
+namespace Sockets
 {
 	
 struct Hostent;
@@ -120,7 +120,7 @@ struct Host
 	std::string host;
 	Options options;
 	int port;
-	TCP::Hostent* hp;
+	Sockets::Hostent* hp;
 };
 
 

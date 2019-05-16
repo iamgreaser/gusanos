@@ -161,13 +161,23 @@ public:
 	int classFlags;
 };
 
+class ZComUnofficial_Connection
+{
+public:
+	ZComUnofficial_Connection(ZCom_Address addr, ZCom_BitStream* joinBitStream);
+	~ZComUnofficial_Connection();
+private:
+	ZCom_Address m_addr;
+	ZCom_BitStream* m_joinBitStream;
+};
+
 class ZCom_Control
 {
 public:
 	ZCom_Control();
 	~ZCom_Control();
 	void Shutdown(void);
-	void ZCom_Connect(ZCom_Address addr, ZCom_BitStream *bitStream);
+	void ZCom_Connect(ZCom_Address addr, ZCom_BitStream* bitStream);
 	void ZCom_Disconnect(ZCom_ConnID connID, ZCom_BitStream* bitStream);
 	void ZCom_disconnectAll(ZCom_BitStream* bitStream);
 	ZComUnofficial_ConnectionStats ZCom_getConnectionStats(ZCom_ConnID connID);

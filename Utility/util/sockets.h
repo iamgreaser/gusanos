@@ -28,7 +28,7 @@ inline int sockError() { return errno; }
 #include <string>
 #include <cassert>
 
-namespace TCP
+namespace Sockets
 {
 
 struct Hostent : public hostent

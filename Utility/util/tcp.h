@@ -2,6 +2,7 @@
 #define OMFG_TCP_H
 
 #include <ctime>
+#include "util/sockets.h"
 
 namespace TCP
 {

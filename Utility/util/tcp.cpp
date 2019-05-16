@@ -1,5 +1,5 @@
-#include "tcp.h"
-#include "sockets.h"
+#include "util/tcp.h"
+#include "util/sockets.h"
 
 namespace TCP
 {
