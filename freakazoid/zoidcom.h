@@ -22,6 +22,15 @@ typedef int32_t ZCom_FileTransID;
 typedef int32_t ZCom_InterceptID;
 typedef int32_t ZCom_NodeID;
 
+// INTERNAL
+constexpr int ZComUnofficial_Base_For_ClassID = 0x0;
+constexpr int ZComUnofficial_Base_For_ConnID = 0x1;
+constexpr int ZComUnofficial_Base_For_FileTransID = 0x2;
+constexpr int ZComUnofficial_Base_For_InterceptID = 0x3;
+constexpr int ZComUnofficial_Base_For_NodeID = 0x4;
+constexpr int ZComUnofficial_IDCounter_Step = 0x10;
+extern int ZComUnofficial_IDCounter;
+
 // not a public API, but one added specifically for Freakazoid
 void ZoidCom_debugMessage(char const* msg);
 
@@ -205,6 +214,9 @@ public:
 class ZCom_Node
 {
 public:
+	ZCom_Node(void);
+	ZCom_Node(ZCom_NodeID nodeID, eZCom_NodeRole nodeRole);
+	~ZCom_Node();
 	void acceptFile(ZCom_ConnID connID, ZCom_FileTransID fileTransID, int unk003, bool actuallyAccept);
 	void addReplicationFloat(zFloat* data, int unk002, zU32 flags, zU8 rules);
 	void addReplicationInt(zS32* data, int bits, bool unk003, zU32 flags, zU8 rules);
@@ -228,9 +240,11 @@ public:
 	void setAnnounceData(ZCom_BitStream* bitStream);
 	void setEventNotification(bool unk001, bool unk002);
 	void setInterceptID(ZCom_InterceptID interceptID);
-	void setOwner(float lol, bool unk002);
+	void setOwner(ZCom_ConnID connID, bool unk002);
 	void setReplicationInterceptor(ZCom_NodeReplicationInterceptor* nodeReplicationInterceptor);
-
+private:
+	ZCom_NodeID m_nodeID;
+	eZCom_NodeRole m_nodeRole;
 };
 
 class ZCom_NodeReplicationInterceptor

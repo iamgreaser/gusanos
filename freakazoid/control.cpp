@@ -116,11 +116,10 @@ ZCom_ClassID ZCom_Control::ZCom_registerClass(std::string className, int classFl
 	}
 	else
 	{
-		while (classIDMap.find(id) != classIDMap.end())
-		{
-			id++;
-		}
+		id = ZComUnofficial_IDCounter + ZComUnofficial_Base_For_ClassID;
+		ZComUnofficial_IDCounter += ZComUnofficial_IDCounter_Step;
 		classSettings = new ZComUnofficial_ClassSettings();
+		classIDMap.emplace( id, classSettings );
 	}
 
 	classSettings->className = className;

@@ -5,6 +5,8 @@
 
 #include "zoidcom.h"
 
+int ZComUnofficial_IDCounter = ZComUnofficial_IDCounter_Step;
+
 void dumb_logger(char const* msg)
 {
 	std::cerr << "FREAKAZOID: " << msg << std::endl;
