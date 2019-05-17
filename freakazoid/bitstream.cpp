@@ -106,8 +106,11 @@ void ZCom_BitStream::addString(std::string data)
 
 void ZCom_BitStream::addBitStream(ZCom_BitStream* bitStream)
 {
-	// Concatenate it all
-	m_buffer.insert(m_buffer.end(), bitStream->m_buffer.begin(), bitStream->m_buffer.end());
+	if ( bitStream != NULL )
+	{
+		// Concatenate it all
+		m_buffer.insert(m_buffer.end(), bitStream->m_buffer.begin(), bitStream->m_buffer.end());
+	}
 }
 
 ZCom_BitStream* ZCom_BitStream::Duplicate(void)
@@ -123,6 +126,13 @@ zU32 ZCom_BitStream::getInt(int bits)
 	// Decode according to bit packing.
 	zU32 data = 0;
 	int leftShift = 0;
+
+	// If we're reading past the end, return 0.
+	if ( m_bufferReadPointer >= m_buffer.size() )
+	{
+		return 0;
+	}
+
 	assert(m_bufferReadPointer+1 <= m_buffer.size());
 	while((m_buffer[m_bufferReadPointer] & 0x80) != 0)
 	{

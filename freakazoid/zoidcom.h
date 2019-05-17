@@ -39,6 +39,7 @@ void ZoidCom_debugMessage(char const* msg);
 constexpr int32_t ZCom_Invalid_ID = 0;
 
 class ZCom_BitStream;
+class ZCom_Control;
 class ZCom_Node;
 class ZCom_NodeReplicationInterceptor;
 class ZCom_Replicator;
@@ -164,11 +165,34 @@ public:
 class ZComUnofficial_Connection
 {
 public:
-	ZComUnofficial_Connection(ZCom_Address addr, ZCom_BitStream* joinBitStream);
+	enum ConnState {
+		ConnDead = 0,
+		ConnDyingNoAddress,
+		ConnHosting,
+		ConnPreConnecting,
+		ConnConnecting,
+		ConnJoined,
+	};
+
+	ZComUnofficial_Connection(ZCom_Control* control, int udpPort);
+	ZComUnofficial_Connection(ZCom_Control* control, ZCom_Address addr, ZCom_BitStream* joinBitStream);
 	~ZComUnofficial_Connection();
+
+protected:
+	void sendClientPacket(const char *data, size_t len);
+	size_t recvClientPacket(char *data, size_t *len);
+
 private:
 	ZCom_Address m_addr;
+	std::string m_addrIP;
+	std::string m_addrPortStr;
 	ZCom_BitStream* m_joinBitStream;
+	int m_sockfd;
+
+	void *m_client_sockaddr;
+	size_t m_client_sockaddr_len;
+	ZCom_Control* m_control;
+	ConnState m_state;
 };
 
 class ZCom_Control
@@ -210,6 +234,8 @@ public:
 protected:
 	std::map<ZCom_ClassID, ZComUnofficial_ClassSettings*> classIDMap;
 	std::map<std::string, ZCom_ClassID> classNameToIDMap;
+	ZComUnofficial_Connection* m_clientConnection;
+	ZComUnofficial_Connection* m_serverConnection;
 };
 
 class ZCom_FileTransInfo

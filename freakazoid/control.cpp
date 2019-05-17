@@ -10,6 +10,8 @@ ZComUnofficial_ClassSettings::~ZComUnofficial_ClassSettings()
 //
 
 ZCom_Control::ZCom_Control()
+	: m_clientConnection(NULL)
+	, m_serverConnection(NULL)
 {
 	ZoidCom_debugMessage("ZCom_Control constructor called");
 }
@@ -38,14 +40,21 @@ void ZCom_Control::ZCom_Connect(ZCom_Address addr, ZCom_BitStream *bitStream)
 {
 	ZCom_BitStream bs;
 	ZoidCom_debugMessage((std::string("ZCom_Connect called with IP ") + addr.getIP()).c_str());
-	// FIXME: actually attempt to connect
+
+	if ( m_clientConnection )
+	{
+		delete m_clientConnection;
+		m_clientConnection = NULL;
+	}
+
+	m_clientConnection = new ZComUnofficial_Connection(this, addr, bitStream);
 
 	//bs.addInt(0, 8); // "Refused"
 	//bs.addString("default");
 	//bs.addString("poo");
 	//ZCom_cbConnectResult(ZCom_Invalid_ID, eZCom_ConnAccepted, bs);
 
-	ZCom_cbConnectionClosed(ZCom_Invalid_ID, eZCom_ClosedTimeout, bs);
+	//ZCom_cbConnectionClosed(ZCom_Invalid_ID, eZCom_ClosedTimeout, bs);
 }
 
 void ZCom_Control::ZCom_Disconnect(ZCom_ConnID connID, ZCom_BitStream* bitStream)
@@ -88,7 +97,23 @@ bool ZCom_Control::ZCom_initSockets(bool unk001, int udpPort, int unk003, int un
 {
 	ZoidCom_debugMessage((std::string("ZCom_initSockets called with unk001 ") + std::to_string(unk001) + std::string(", udpPort ") + std::to_string(udpPort) + std::string(", unk003 ") + std::to_string(unk003) + std::string(", unk004 ") + std::to_string(unk004)).c_str());
 
-	return true;
+	if ( udpPort == 0 )
+	{
+		// Client - handle connection in another function
+		return true;
+	}
+	else
+	{
+		// Server
+		if ( m_serverConnection )
+		{
+			delete m_serverConnection;
+			m_serverConnection = NULL;
+		}
+
+		m_serverConnection = new ZComUnofficial_Connection(this, udpPort);
+		return true;
+	}
 }
 
 void ZCom_Control::ZCom_processInput(eZComUnofficial_BlockingType blockingType)

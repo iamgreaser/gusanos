@@ -432,7 +432,29 @@ void Network::update()
 					m_control = new Client( 0 );
 					registerClasses();
 					ZCom_Address address;
-					address.setAddress( eZCom_AddressUDP, 0, ( data.addr + ":" + cast<string>(m_serverPort) ).c_str() );
+
+					// for IPv6 addresses
+					size_t posOpen = data.addr.find("[");
+					size_t posClosed = data.addr.find("]");
+					size_t posColon;
+					if ( posOpen != string::npos && posClosed != string::npos )
+					{
+						posColon = data.addr.find(":", posClosed);
+					}
+					else
+					{
+						posColon = data.addr.find(":");
+					}
+
+					if ( posColon != string::npos )
+					{
+						address.setAddress( eZCom_AddressUDP, 0, ( data.addr ).c_str() );
+					}
+					else
+					{
+						address.setAddress( eZCom_AddressUDP, 0, ( data.addr + ":" + cast<string>(m_serverPort) ).c_str() );
+
+					}
 					m_control->ZCom_Connect( address, NULL );
 					//m_client = true; // We wait with setting this until we've connected
 					m_lastServerAddr = data.addr;

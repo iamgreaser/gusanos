@@ -9,8 +9,6 @@ namespace UDP
 
 struct Socket
 {
-	static int const bufferSize = 2048;
-
 	enum Error
 	{
 		ErrorNone,
@@ -19,25 +17,8 @@ struct Socket
 		ErrorTimeout,
 	};
 
-	struct ResumeSend
-	{
-		ResumeSend(Socket* sock_, char const* b_, char const* e_)
-		: sock(sock_), b(b_), e(e_), error(ErrorNone)
-		{
-		}
-
-		Socket* sock;
-		char const* b;
-		char const* e;
-		Error error;
-
-		bool resume();
-	};
-
 	Socket(int s_, int timeOut_ = 10)
-	: s(s_), connected(false), connecting(true)
-	, error(ErrorNone), timeOut(timeOut_)
-	, dataBegin(0), dataEnd(0)
+	: s(s_), error(ErrorNone), timeOut(timeOut_)
 	{
 		resetTimer();
 	}
@@ -65,11 +46,6 @@ struct Socket
 
 protected:
 	int s;
-	bool connected;
-	bool connecting;
-	char staticBuffer[bufferSize];
-	char const* dataBegin;
-	char const* dataEnd;
 	Error error;
 	time_t t;
 	int timeOut;

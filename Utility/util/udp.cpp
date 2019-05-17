@@ -30,10 +30,11 @@ bool Socket::think()
 
 bool Socket::readPacket()
 {
-	dataBegin = dataEnd = 0;
-	
+	char staticBuffer[2048];
+	const int bufferSize = sizeof(staticBuffer);
 	sockaddr_in addr;
 	socklen_t addrlen = sizeof(addr);
+
 	ssize_t r = recvfrom(s, staticBuffer, bufferSize, 0, (sockaddr*)&addr, &addrlen);
 	if(r != -1)
 	{
