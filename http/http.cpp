@@ -253,23 +253,23 @@ Request* Host::query(
 {
 	sockaddr_in server;
 	
+	std::string connHost = (options.hasProxy ? options.proxy : host);
+	int connPort = (options.hasProxy ? options.proxyPort : port);
 	if(!hp || options.changed) // Address not resolved
 	{
 		options.changed = false;
 		delete hp; hp = 0;
-		if(!(hp = Sockets::resolveHost( (options.hasProxy ? options.proxy : host) )))
+		if(!(hp = Sockets::resolveHost( connHost, connPort )))
 			return 0;
 	}
 	
-    Sockets::createAddr(server, hp, options.hasProxy ? options.proxyPort : port);
-    
-    int s;
-    if((s = Sockets::socketNonBlock()) < 0)
-    	return 0;
-    	
-    if(!Sockets::connect(s, server))
-    	return 0;
-    
+	int s;
+	if((s = Sockets::socketNonBlock()) < 0)
+		return 0;
+
+	if(!Sockets::connect(s, hp))
+		return 0;
+
 	std::stringstream ss;
 	if (options.hasProxy)
 	{
@@ -277,30 +277,30 @@ Request* Host::query(
 		<< command << " http://" << host << ':' << port << '/'
 		<< url << " HTTP/1.0\015\012"
 		"User-Agent: " << options.userAgent << "\015\012";
-		
+
 		if(data.size() > 0)
 			ss << "Content-Length: " << data.size() << "\015\012";
 			
 		ss
 		<< addHeader << "\015\012";
-    }
-    else
-    {
-    	ss
-    	<< command << " /" << url << " HTTP/1.0\015\012"
-    	"Host: " << host << ":" << port << "\015\012"
-    	"User-Agent: " << options.userAgent << "\015\012";
-    	
-    	if(data.size() > 0)
+	}
+	else
+	{
+		ss
+		<< command << " /" << url << " HTTP/1.0\015\012"
+		"Host: " << host << ":" << port << "\015\012"
+		"User-Agent: " << options.userAgent << "\015\012";
+
+		if(data.size() > 0)
 			ss << "Content-Length: " << data.size() << "\015\012";
 			
 		ss
-    	<< addHeader << "\015\012";
-    }
-    
-    //cout << "Returning request" << endl;
+		<< addHeader << "\015\012";
+	}
 
-    return new Request(s, ss.str(), data);
+	//cout << "Returning request" << endl;
+
+	return new Request(s, ss.str(), data);
 }
 
 Request* Host::get(std::string const& url)

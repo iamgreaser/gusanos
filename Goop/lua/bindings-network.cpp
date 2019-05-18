@@ -128,21 +128,17 @@ int l_tcp_connect(lua_State* L)
 	//lua_pushvalue(context, 3);
 	//LuaReference recvCallback = context.createReference();
 	
-	sockaddr_in server;
-	
-	std::auto_ptr<Sockets::Hostent> hp(Sockets::resolveHost( addr ));
+	std::auto_ptr<Sockets::Addrinfo> hp(Sockets::resolveHost( addr, port ));
 	
 	if(!hp.get())
 		return 0;
-	
-    Sockets::createAddr(server, hp.get(), port);
-    
-    int s;
-    if((s = Sockets::socketNonBlock()) < 0)
-    	return 0;
-    	
-    if(!Sockets::connect(s, server))
-    	return 0;
+
+	int s;
+	if((s = Sockets::socketNonBlock()) < 0)
+		return 0;
+
+	if(!Sockets::connect(s, hp.get()))
+		return 0;
 
 	void* space = lua_newuserdata(context, sizeof(LuaSocket));
 	//lua_pushvalue(context, -1);
@@ -150,7 +146,7 @@ int l_tcp_connect(lua_State* L)
 	new (space) LuaSocket(s);
 	context.push(SocketMetaTable);
 	lua_setmetatable(context, -2);
-	
+
 	return 1;
 }
 

@@ -61,30 +61,58 @@ void deleteList(char** p)
 	delete[] p;
 }
 
-Hostent::Hostent(hostent const* p)
+Addrinfo::Addrinfo(addrinfo const* p)
 {
-	h_name = copyCString(p->h_name);
-	h_aliases = copyList(p->h_aliases);
-	h_addrtype = p->h_addrtype;
-	h_length = p->h_length;
-	h_addr_list = copyListL(p->h_addr_list, h_length);
+	ai_flags = p->ai_flags;
+	ai_family = p->ai_family;
+	ai_socktype = p->ai_socktype;
+	ai_protocol = p->ai_protocol;
+	ai_addrlen = p->ai_addrlen;
+	ai_addr = (struct sockaddr *)malloc(p->ai_addrlen);
+	memcpy((void *)ai_addr, (void *)p->ai_addr, (size_t)p->ai_addrlen);
+	if( p->ai_canonname )
+	{
+		size_t canonlen = strlen(p->ai_canonname)+1;
+		ai_canonname = (char *)malloc(canonlen);
+		memset((void *)ai_canonname, 0, canonlen);
+		strncpy((char *)ai_canonname, (char *)p->ai_canonname, canonlen-1);
+	}
+	else
+	{
+		ai_canonname = NULL;
+	}
+	ai_next = NULL; // Don't link
 }
 
-Hostent::~Hostent()
+Addrinfo::~Addrinfo()
 {
-	delete[] h_name;
-	deleteList(h_aliases);
-	deleteList(h_addr_list);
+	if ( ai_addr )
+	{
+		free(ai_addr);
+		ai_addr = NULL;
+	}
+
+	if ( ai_canonname )
+	{
+		free(ai_canonname);
+		ai_canonname = NULL;
+	}
 }
 
-Hostent* resolveHost(std::string const& name)
+Addrinfo* resolveHost(std::string const& name, int const& port)
 {
-	hostent* p = gethostbyname( name.c_str() );
+	addrinfo* p = NULL;
+	int gaiError = getaddrinfo( name.c_str(), std::to_string(port).c_str(), NULL, &p);
 	
-	if(!p)
+	if ( gaiError != 0 )
+	{
 		return 0; // ERROR
+	}
 	
-	return new Hostent(p);
+	Addrinfo* result = new Addrinfo(p);
+	freeaddrinfo(p);
+
+	return result;
 }
 
 int socketNonBlock()
@@ -104,19 +132,9 @@ int socketNonBlock()
 	return s;
 }
 
-bool createAddr(sockaddr_in& addr, hostent* hp, int port)
+bool connect(int s, Addrinfo* ai)
 {
-	memset((char *) &addr, 0, sizeof(addr));
-    memmove((char *) &addr.sin_addr, hp->h_addr_list[0], hp->h_length);
-    addr.sin_family = hp->h_addrtype;
-    addr.sin_port = htons( port );
-    
-    return true;
-}
-
-bool connect(int s, sockaddr_in& addr)
-{
-	int r = connect(s, reinterpret_cast<sockaddr *>(&addr), sizeof(addr));
+	int r = connect(s, reinterpret_cast<sockaddr *>(ai->ai_addr), ai->ai_addrlen);
 
 	if(r == -1 &&
 #ifdef WINDOWS

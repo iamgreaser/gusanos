@@ -31,20 +31,18 @@ inline int sockError() { return errno; }
 namespace Sockets
 {
 
-struct Hostent : public hostent
+struct Addrinfo : public addrinfo
 {
-	Hostent(hostent const* p);
+	Addrinfo(addrinfo const* p);
 	
-	~Hostent();
+	~Addrinfo();
 };
 
-Hostent* resolveHost(std::string const& name);
+Addrinfo* resolveHost(std::string const& name, int const& port);
 
 int socketNonBlock();
 
-bool connect(int s, sockaddr_in& addr);
-
-bool createAddr(sockaddr_in& addr, hostent* hp, int port);
+bool connect(int s, Addrinfo* addr);
 
 }
 

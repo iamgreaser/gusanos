@@ -12,13 +12,6 @@
 #include <zoidcom.h>
 #endif
 
-namespace Sockets
-{
-	
-struct Hostent;
-
-}
-
 namespace HTTP
 {
 
@@ -120,7 +113,7 @@ struct Host
 	std::string host;
 	Options options;
 	int port;
-	Sockets::Hostent* hp;
+	Sockets::Addrinfo* hp;
 };
 
 
