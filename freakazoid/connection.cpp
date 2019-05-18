@@ -163,7 +163,29 @@ ZComUnofficial_Connection::ZComUnofficial_Connection(ZCom_Control* control, ZCom
 	ZoidCom_debugMessage(string("Ready to connect to " + outputIP).c_str());
 	m_state = ConnConnecting;
 
-	sendClientPacket("HONK HONK", 9);
+	std::vector<uint8_t> payload;
+
+	// latest_sent_index
+	payload.push_back(0x00);
+	payload.push_back(0x00);
+	// latest_received_index
+	payload.push_back(0x00);
+	payload.push_back(0x00);
+	// hole_count
+	payload.push_back(0x00);
+
+	// Packet at index 0x0001
+	uint16_t packet_index = 0x0001;
+	size_t packet_length = m_joinBitStream->m_buffer.size();
+	payload.push_back((packet_index&0xFF));
+	payload.push_back(((packet_index>>8)&0xFF));
+	payload.push_back(eZCom_PacketJoinRequest);
+	for(size_t i = 0; i < packet_length; i++)
+	{
+		payload.push_back(m_joinBitStream->m_buffer[i]);
+	}
+
+	sendClientPacket((const char *)(payload.data()), payload.size());
 }
 
 ZComUnofficial_Connection::~ZComUnofficial_Connection()
@@ -195,15 +217,104 @@ ZComUnofficial_Connection::~ZComUnofficial_Connection()
 	ZoidCom_debugMessage(string("Destroyed socket").c_str());
 }
 
+void ZComUnofficial_Connection::sendClientPacket(const char *data, size_t len, void *other_sockaddr, size_t other_sockaddr_len)
+{
+	ssize_t result = sendto(m_sockfd, data, len, 0, (sockaddr *)other_sockaddr, other_sockaddr_len);
+	assert(result >= 0);
+}
+
 void ZComUnofficial_Connection::sendClientPacket(const char *data, size_t len)
 {
 	ssize_t result = sendto(m_sockfd, data, len, 0, (sockaddr *)m_client_sockaddr, m_client_sockaddr_len);
 	assert(result >= 0);
 }
 
-size_t ZComUnofficial_Connection::recvClientPacket(char *data, size_t *len)
+size_t ZComUnofficial_Connection::recvClientPacket(char *data, size_t len, void* other_sockaddr, unsigned int* other_sockaddr_len)
 {
-	// TODO!
-	return 0;
+	ssize_t result = recvfrom(m_sockfd, data, len, MSG_DONTWAIT, (sockaddr *)other_sockaddr, other_sockaddr_len);
+	if ( result < 0 )
+	{
+		int err = errno;
+		if ( err == EAGAIN )
+		{
+			return 0;
+		}
+		else
+		{
+			assert ( !"I don't know how to deal with recvfrom errors that aren't EAGAIN!" );
+		}
+	}
+
+	return (size_t)result;
 }
 
+void ZComUnofficial_Connection::think(void)
+{
+	while(true)
+	{
+		switch(m_state)
+		{
+			case ConnDead:
+				return;
+
+			case ConnDyingNoAddress: {
+				ZCom_BitStream reply1;
+				//ZCom_BitStream reply2;
+				m_state = ConnDead;
+				m_control->ZCom_cbConnectResult(0, eZCom_ConnNopeThatDidntWork, reply1);
+				//m_control->ZCom_cbConnectionClosed(0, eZCom_ClosedDisconnect, reply2);
+			} return;
+
+			default:
+				break;
+		}
+
+		uint8_t packet_buffer[2048];
+		uint8_t other_sockaddr[256]; // because IPv6 is a thing and sockaddr isn't big enough --GM
+		socklen_t other_sockaddr_len = sizeof(other_sockaddr);
+		size_t packet_length = recvClientPacket((char *)packet_buffer, (size_t)sizeof(packet_buffer), (void *)other_sockaddr, &other_sockaddr_len);
+
+		if ( packet_length == 0 )
+		{
+			break;
+		}
+
+		ZoidCom_debugMessage((string("Got packet of length ") + to_string(packet_length)).c_str());
+		assert(packet_length >= 5);
+
+		uint16_t latest_sent_index = (uint16_t)((packet_buffer[0])|(packet_buffer[1]<<8));
+		uint16_t latest_received_index = (uint16_t)((packet_buffer[2])|(packet_buffer[3]<<8));
+		uint8_t hole_count = packet_buffer[4];
+
+		// TODO: handle holes
+		int start_idx = 5 + (hole_count*3);
+		assert(packet_length >= 5+(hole_count*3));
+		if (start_idx != 5+(hole_count*3))
+		{
+			assert(packet_length >= 5+(hole_count*3)+3);
+			uint16_t payload_index = (uint16_t)((packet_buffer[start_idx+0])|(packet_buffer[start_idx+1]<<8));
+			uint8_t payload_type = packet_buffer[start_idx+2];
+			size_t payload_length = packet_length - (start_idx+3);
+			uint8_t* payload_data = &packet_buffer[start_idx+3];
+
+			std::vector<uint8_t> payload;
+
+			// latest_sent_index
+			payload.push_back(0x00);
+			payload.push_back(0x00);
+			// latest_received_index
+			payload.push_back(0x00);
+			payload.push_back(0x00);
+			// hole_count
+			payload.push_back(0x00);
+
+			// Packet at index 0x0000
+			uint16_t packet_index = 0x0000;
+			payload.push_back((packet_index&0xFF));
+			payload.push_back(((packet_index>>8)&0xFF));
+			payload.push_back(eZCom_PacketInformalDisconnect);
+
+			sendClientPacket((const char *)(payload.data()), payload.size());
+		}
+	}
+}

@@ -120,6 +120,15 @@ void ZCom_Control::ZCom_processInput(eZComUnofficial_BlockingType blockingType)
 {
 	// we're assuming non-blocking here as I have no idea what the blocking variant is called here --GM
 	//ZoidCom_debugMessage((std::string("ZCom_processInput called")).c_str());
+	if ( m_clientConnection != NULL )
+	{
+		m_clientConnection->think();
+	}
+
+	if ( m_serverConnection != NULL )
+	{
+		m_serverConnection->think();
+	}
 }
 
 void ZCom_Control::ZCom_processOutput(void)

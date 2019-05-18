@@ -46,6 +46,7 @@ class ZCom_Replicator;
 class ZCom_ReplicatorSetup;
 
 class ZComUnofficial_ConnectionStats;
+class ZComUnofficial_Connection;
 typedef std::string ZComUnofficial_IP; // What, you think we're going to lock this down to IPv4? --GM
 
 #define ZCOM_CLASSFLAG_ANNOUNCEDATA 0x00000001
@@ -64,20 +65,20 @@ typedef std::string ZComUnofficial_IP; // What, you think we're going to lock th
 
 typedef enum eZCom_CloseReason_enum
 {
-	eZCom_ClosedDisconnect,
+	eZCom_ClosedDisconnect = 0,
 	eZCom_ClosedReconnect,
 	eZCom_ClosedTimeout,
 } eZCom_CloseReason;
 
 typedef enum eZCom_ConnectResult_enum
 {
-	eZCom_ConnAccepted,
+	eZCom_ConnAccepted = 0,
 	eZCom_ConnNopeThatDidntWork, // not an actual name, but we need something just in case --GM
 } eZCom_ConnectResult;
 
 typedef enum eZCom_Event_enum
 {
-	eZCom_EventInit,
+	eZCom_EventInit = 0,
 	eZCom_EventRemoved,
 	eZCom_EventUser,
 	eZCom_EventFile_Incoming,
@@ -97,14 +98,14 @@ typedef enum eZCom_NodeRole_enum
 
 typedef enum eZCom_SendMode_enum
 {
-	eZCom_Unreliable,
+	eZCom_Unreliable = 0,
 	eZCom_ReliableUnordered,
 	eZCom_ReliableOrdered,
 } eZCom_SendMode;
 
 typedef enum eZCom_ZoidResult_enum
 {
-	eZCom_ZoidEnabled,
+	eZCom_ZoidEnabled = 0,
 	eZCom_ZoidNopeThatDidntWork, // not an actual name, but we need something just in case --GM
 } eZCom_ZoidResult;
 
@@ -131,6 +132,7 @@ protected:
 
 class ZCom_BitStream
 {
+	friend class ZComUnofficial_Connection;
 public:
 	ZCom_BitStream();
 	~ZCom_BitStream();
@@ -162,6 +164,14 @@ public:
 	int classFlags;
 };
 
+typedef enum eZComUnofficial_PacketType_enum
+{
+	eZCom_PacketInformalDisconnect = 0x01,
+	eZCom_PacketPart = 0x02,
+	eZCom_PacketJoinRequest = 0x03,
+	eZCom_PacketJoinAccept = 0x04,
+} eZComUnofficial_PacketType;
+
 class ZComUnofficial_Connection
 {
 public:
@@ -177,10 +187,12 @@ public:
 	ZComUnofficial_Connection(ZCom_Control* control, int udpPort);
 	ZComUnofficial_Connection(ZCom_Control* control, ZCom_Address addr, ZCom_BitStream* joinBitStream);
 	~ZComUnofficial_Connection();
+	void think(void);
 
 protected:
 	void sendClientPacket(const char *data, size_t len);
-	size_t recvClientPacket(char *data, size_t *len);
+	void sendClientPacket(const char *data, size_t len, void* other_sockaddr, size_t other_sockaddr_len);
+	size_t recvClientPacket(char *data, size_t len, void* other_sockaddr, unsigned int* other_sockaddr_len);
 
 private:
 	ZCom_Address m_addr;
