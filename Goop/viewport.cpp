@@ -7,8 +7,8 @@
 #include "gfx.h"
 #include <allegro.h>
 #include "base_worm.h"
-#include "base_player.h"
-#include "player.h"
+#include "player/base_player.h"
+#include "player/player.h"
 #include "glua.h"
 #include "lua/bindings-gfx.h"
 #include "blitters/blitters.h"

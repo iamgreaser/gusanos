@@ -4,7 +4,7 @@
 #include "game.h"
 #include "base_object.h"
 #include "base_worm.h"
-#include "base_player.h"
+#include "player/base_player.h"
 #include "exp_type.h"
 #include "events.h"
 #ifndef DEDSERV

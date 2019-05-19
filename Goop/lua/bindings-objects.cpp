@@ -5,14 +5,14 @@
 #include "luaapi/macros.h"
 #include "luaapi/classes.h"
 
-#include "../base_player.h"
-#include "../player.h"
-#include "../base_worm.h"
-#include "../particle.h"
-#include "../weapon.h"
-#include "../weapon_type.h"
-#include "../game.h"
-#include "../glua.h"
+#include "player/base_player.h"
+#include "player/player.h"
+#include "base_worm.h"
+#include "particle.h"
+#include "weapon.h"
+#include "weapon_type.h"
+#include "game.h"
+#include "glua.h"
 #include "util/log.h"
 
 #include <cmath>

@@ -6,7 +6,7 @@
 #include "viewport.h"
 #endif
 #include "material.h"
-#include "base_player.h"
+#include "player/base_player.h"
 #include "sprite_set.h"
 #include "sprite.h"
 #include "util/vec.h"

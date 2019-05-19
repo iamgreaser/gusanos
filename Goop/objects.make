@@ -4,7 +4,6 @@ Goop/animators.o \
 Goop/base_action.o \
 Goop/base_animator.o \
 Goop/base_object.o \
-Goop/base_player.o \
 Goop/base_worm.o \
 Goop/detect_event.o \
 Goop/distortion.o \
@@ -29,10 +28,6 @@ Goop/objects_list.o \
 Goop/parser.o \
 Goop/part_type.o \
 Goop/particle.o \
-Goop/player.o \
-Goop/player_ai.o \
-Goop/player_input.o \
-Goop/player_options.o \
 Goop/resource_base.o \
 Goop/resource_list.o \
 Goop/script.o \
@@ -52,3 +47,4 @@ include Goop/blitters/objects.make
 include Goop/input/objects.make
 include Goop/loaders/objects.make
 include Goop/lua/objects.make
+include Goop/player/objects.make

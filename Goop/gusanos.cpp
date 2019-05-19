@@ -9,7 +9,7 @@
 #include "part_type.h"
 #include "particle.h"
 #include "worm.h"
-#include "player.h"
+#include "player/player.h"
 #include "util/macros.h"
 //#include "util/log.h"
 #ifndef DEDSERV
@@ -23,7 +23,7 @@
 #include "input/keyboard.h"
 #endif
 #include "sprite_set.h"
-#include "player_ai.h"
+#include "player/player_ai.h"
 
 
 #include "script.h"

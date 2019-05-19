@@ -1,5 +1,5 @@
 #include "glua.h"
-#include "player.h"
+#include "player/player.h"
 #include "luaapi/context.h"
 
 //LuaContext lua;

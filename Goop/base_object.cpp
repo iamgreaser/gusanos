@@ -1,7 +1,7 @@
 #include "base_object.h"
 #include "util/vec.h"
 #include "util/angle.h"
-#include "base_player.h"
+#include "player/base_player.h"
 #include "glua.h"
 #include "luaapi/context.h"
 #include "lua/bindings-objects.h"
