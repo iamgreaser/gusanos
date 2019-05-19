@@ -135,7 +135,6 @@ public:
 	enum PLAYER_TYPE
 	{
 		OWNER = 0,
-		PROXY,
 		AI,
 	};
 	

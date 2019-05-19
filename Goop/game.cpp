@@ -16,7 +16,6 @@
 #include "gconsole.h"
 #include "game_actions.h"
 #include "base_player.h"
-#include "proxy_player.h"
 #include "gfx.h"
 #include "sprite_set.h"
 #include "util/macros.h"
@@ -985,7 +984,6 @@ BasePlayer* Game::addPlayer( PLAYER_TYPE type, int team, BaseWorm* worm )
 	BasePlayer* p = 0;
 	switch(type)
 	{
-		
 		case OWNER:
 		{
 			if ( localPlayers.size() >= MAX_LOCAL_PLAYERS ) allegro_message("OMFG Too much local players");
@@ -1011,15 +1009,7 @@ BasePlayer* Game::addPlayer( PLAYER_TYPE type, int team, BaseWorm* worm )
 			p = player;
 		}
 		break;
-				
-		case PROXY:
-		{
-			ProxyPlayer* player = new ProxyPlayer(worm);
-			players.push_back( player );
-			p = player;
-		}
-		break;
-		
+
 		case AI:
 		{
 			PlayerAI* player = new PlayerAI(team, worm);
@@ -1027,7 +1017,7 @@ BasePlayer* Game::addPlayer( PLAYER_TYPE type, int team, BaseWorm* worm )
 			p = player;
 		}
 	}
-	
+
 	if(p)
 	{
 		EACH_CALLBACK(i, playerInit)
@@ -1035,7 +1025,7 @@ BasePlayer* Game::addPlayer( PLAYER_TYPE type, int team, BaseWorm* worm )
 			(lua.call(*i), p->getLuaReference())();
 		}
 	}
-	
+
 	return p;
 }
 

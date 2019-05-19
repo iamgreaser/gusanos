@@ -36,7 +36,6 @@ Goop/player.o \
 Goop/player_ai.o \
 Goop/player_input.o \
 Goop/player_options.o \
-Goop/proxy_player.o \
 Goop/resource_base.o \
 Goop/resource_list.o \
 Goop/script.o \
