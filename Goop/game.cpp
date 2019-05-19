@@ -33,8 +33,6 @@
 #include "viewport.h"
 #endif //DEDSERV
 #include "player_ai.h"
-#include "net_worm.h"
-#include "network.h"
 #include "script.h"
 #include "ninjarope.h"
 #include "hash_table.h"
@@ -77,12 +75,7 @@ namespace
 		//RegisterLuaEvents, //oobsol33t
 		NetEventsCount,
 	};
-	
-	void addEvent(ZCom_BitStream* data, NetEvents event)
-	{
-		data->addInt(static_cast<int>(event), 8);
-	}
-	
+
 	std::list<LevelEffectEvent> appliedLevelEffects;
 
 	std::string nextMod;
@@ -90,8 +83,6 @@ namespace
 	std::string m_modName;
 	fs::path    m_defaultPath;
 	bool loaded;
-	ZCom_Node *m_node;
-	bool m_isAuthority;
 	HashTable<std::string, unsigned long> stringToIndexMap;
 	std::vector<std::string> indexToStringMap;
 	
@@ -107,8 +98,6 @@ namespace
 		return v;
 	}
 }
-
-ZCom_ClassID Game::classID = ZCom_Invalid_ID;
 
 Game game;
 
@@ -190,23 +179,18 @@ string gameCompleter(Console* con, int idx, std::string const& beginning)
 
 string addbotCmd(const list<string> &args)
 {
-	if ( !network.isClient() )
+	int team = -1;
+	list<string>::const_iterator i = args.begin();
+	if(i != args.end())
 	{
-		int team = -1;
-		list<string>::const_iterator i = args.begin();
-		if(i != args.end())
-		{
-			team = cast<int>(*i);
-			++i;
-		}
-		game.addBot(team);
-		return "";
-	}else
-	{
-		return "You cant add bots as client";
+		team = cast<int>(*i);
+		++i;
 	}
+	game.addBot(team);
+	return "";
 }
 
+#if 0
 string connectCmd(const list<string> &args)
 {
 	if ( !args.empty() )
@@ -243,6 +227,7 @@ string rConCompleter(Console* con, int idx, std::string const& beginning)
 		
 	return con->completeCommand(beginning);
 }
+#endif
 
 BasePlayer* findPlayerByName(std::string const& name)
 {
@@ -259,6 +244,7 @@ BasePlayer* findPlayerByName(std::string const& name)
 	return 0;
 }
 
+#if 0
 string banCmd(list<string> const& args)
 {
 	if ( !network.isClient() && !args.empty() )
@@ -289,6 +275,7 @@ string kickCmd(const list<string> &args)
 	}
 	return "KICK <PLAYER_NAME> : KICKS THE PLAYER WITH THE SPECIFIED NAME";
 }
+#endif
 
 struct BasePlayerIterGetText
 {
@@ -367,10 +354,10 @@ void Options::registerInConsole()
 		("MAP", mapCmd, mapCompleter)
 		("GAME", gameCmd, gameCompleter)
 		("ADDBOT", addbotCmd)
-		("CONNECT", connectCmd)
-		("RCON", rConCmd, rConCompleter)
-		("KICK", kickCmd, kickCompleter)
-		("BAN", banCmd, kickCompleter)
+		//("CONNECT", connectCmd)
+		//("RCON", rConCmd, rConCompleter)
+		//("KICK", kickCmd, kickCompleter)
+		//("BAN", banCmd, kickCompleter)
 	;
 }
 
@@ -379,7 +366,6 @@ Game::Game()
 	NRPartType = NULL;
 	deathObject = NULL;
 	loaded = false;
-	m_node = NULL;
 }
 
 Game::~Game()
@@ -443,10 +429,7 @@ void Game::init(int argc, char** argv)
 #endif
 	gfx.registerInConsole();
 	options.registerInConsole();
-#ifndef DISABLE_ZOIDCOM
-	network.registerInConsole();
-#endif
-	
+
 	for ( size_t i = 0; i< MAX_LOCAL_PLAYERS; ++i)
 	{
 		shared_ptr<PlayerOptions> options(new PlayerOptions);
@@ -470,15 +453,13 @@ void Game::init(int argc, char** argv)
 	mouseHandler.init();
 #endif
 
-#ifndef DISABLE_ZOIDCOM
-	network.init();
-#endif
 	registerGameActions();
 #ifndef DEDSERV
 	registerPlayerInput();
 #endif
 }
 
+#if 0
 void Game::sendLuaEvent(LuaEventDef* event, eZCom_SendMode mode, zU8 rules, ZCom_BitStream* userdata, ZCom_ConnID connID)
 {
 	if(!m_node) return;
@@ -495,25 +476,12 @@ void Game::sendLuaEvent(LuaEventDef* event, eZCom_SendMode mode, zU8 rules, ZCom
 	else
 		m_node->sendEventDirect(mode, data, connID);
 }
+#endif
 
 void Game::think()
 {
 	mq_process_messages(msg)
 		mq_case(ChangeLevel)
-			
-			if(!network.isDisconnected())
-			{
-				if(!network.isDisconnecting())
-				{
-					if( network.isHost() && options.host )
-						network.disconnect( Network::ServerMapChange );
-					else
-						network.disconnect();
-				}
-				
-				mq_delay(); // Wait until network is disconnected
-			}
-
 			// Network is disconnected
 
 			refreshLevels();
@@ -521,35 +489,21 @@ void Game::think()
 				break;
 			if(!changeLevel( data.level, false ))
 				break;
-			
-			if ( options.host && !network.isClient() )
-			{
-				network.host();
-			}
-			
+
 			runInitScripts();
-				
+
 			// All this is temporal, dont be scared ;D
 			if ( loaded && level.isLoaded() ) 
 			{
-				if ( network.isHost() )
+				if(true)
 				{
-					createNetworkPlayers();
+					BaseWorm* worm = addWorm(true);
+					addPlayer ( OWNER, -1, worm );
 				}
-				else if ( !network.isClient() )
+				if(options.splitScreen)
 				{
-					if(true)
-					{
-						BaseWorm* worm = addWorm(true);
-						addPlayer ( OWNER, -1, worm );
-						//player->assignWorm(worm);
-					}
-					if(options.splitScreen)
-					{
-						BaseWorm* worm = addWorm(true);
-						addPlayer ( OWNER, -1, worm );
-						//player->assignWorm(worm);
-					}
+					BaseWorm* worm = addWorm(true);
+					addPlayer ( OWNER, -1, worm );
 				}
 			}
 		mq_end_case()
@@ -566,116 +520,11 @@ void Game::think()
 #endif
 
 	level.think();
-
-	if ( !m_node )
-		return;
-	
-	while ( m_node->checkEventWaiting() )
-	{
-		eZCom_Event type;
-		eZCom_NodeRole    remote_role;
-		ZCom_ConnID       conn_id;
-		
-		ZCom_BitStream* data = m_node->getNextEvent(&type, &remote_role, &conn_id);
-		switch(type)
-		{
-			case eZCom_EventUser:
-			if ( data )
-			{
-				NetEvents event = (NetEvents)(data->getInt(8));
-				switch ( event )
-				{
-					case eHole:
-					{
-						int index = data->getInt(16);
-						float vx = data->getSignedInt(32);
-						float vy = data->getSignedInt(32);
-						BaseVec<int> v = BaseVec<int>(vx, vy);
-						level.applyEffect( levelEffectList[index], v.x, v.y );
-					}
-					break;
-					
-/*
-					case RegisterLuaEvents:
-					{
-						for(int t = Network::LuaEventGroup::Game;
-							t < Network::LuaEventGroup::Max; ++t)
-						{
-							int c = data->getInt(8);
-							for(int i = 0; i < c; ++i)
-							{
-								char const* name = data->getStringStatic();
-								DLOG("Got lua event: " << name);
-								network.indexLuaEvent((Network::LuaEventGroup::type)t, name);
-							}
-						}
-					}
-					break;
-*/
-					case LuaEvent:
-					{
-						int index = data->getInt(8);
-						DLOG("Got lua event index " << index);
-						if(LuaEventDef* event = network.indexToLuaEvent(Network::LuaEventGroup::Game, index))
-						{
-							event->call(data);
-						}
-					}
-					break;
-					
-					case NetEventsCount: break;
-				}
-			}
-			break;
-			
-			case eZCom_EventInit:
-			{
-				// Call this first since level effects will hog the message queue
-				EACH_CALLBACK(i, gameNetworkInit)
-				{
-					(lua.call(*i), conn_id)();
-				}
-				
-				list<LevelEffectEvent>::iterator iter = appliedLevelEffects.begin();
-				for( ; iter != appliedLevelEffects.end() ; ++iter )
-				{
-					ZCom_BitStream *data = new ZCom_BitStream;
-					addEvent(data, eHole);
-					data->addInt(iter->index, 16);
-					data->addSignedInt(iter->x, 32);
-					data->addSignedInt(iter->y, 32);
-
-					m_node->sendEventDirect(eZCom_ReliableOrdered, data, conn_id );
-				}
-				
-				
-			}
-			break;
-			
-			default: break; // Annoying warnings >:O
-		}
-	}
-
 }
 
 void Game::applyLevelEffect( LevelEffect* effect, int x, int y )
 {
-	if ( !network.isClient() )
-	{
-		if ( level.applyEffect( effect, x, y ) && m_node && network.isHost() )
-		{
-			ZCom_BitStream *data = new ZCom_BitStream;
-
-			addEvent(data, eHole);
-			data->addInt(effect->getIndex(), 16);
-			data->addSignedInt(x, 32);
-			data->addSignedInt(y, 32);
-
-			m_node->sendEvent(eZCom_ReliableOrdered, ZCOM_REPRULE_AUTH_2_ALL, data);
-			
-			appliedLevelEffects.push_back( LevelEffectEvent(effect->getIndex(), x, y ) );
-		}
-	}
+	level.applyEffect( effect, x, y );
 }
 
 void Game::loadWeapons()
@@ -857,7 +706,6 @@ void Game::unload()
 #endif
 	scriptLocator.clear();
 
-	network.clear();
 	lua.reset();
 	luaCallbacks = LuaCallbacks(); // Reset callbacks
 	LuaBindings::init();
@@ -948,24 +796,6 @@ void Game::refreshMods()
 	}
 }
 
-void Game::createNetworkPlayers()
-{
-	BaseWorm* worm = addWorm(true);
-	BasePlayer* player = addPlayer ( OWNER, -1, worm );
-	player->assignNetworkRole(true);
-	//player->assignWorm(worm);
-
-	if(options.splitScreen)
-	{
-		// TODO: Factorize all this out, its being duplicated on client.cpp also :O
-		BaseWorm* worm = addWorm(true); 
-		BasePlayer* player = addPlayer ( OWNER, -1, worm );
-		player->assignNetworkRole(true);
-		//player->assignWorm(worm);
-	}
-}
-
-
 bool Game::changeLevelCmd(const std::string& levelName )
 {
 	/*
@@ -1047,32 +877,7 @@ bool Game::changeLevel(const std::string& levelName, bool refresh )
 	return true;
 }
 
-void Game::assignNetworkRole( bool authority )
-{
-	m_node = new ZCom_Node;
-	
-	m_node->beginReplicationSetup(2);
-		//m_node->addReplicationInt( (zS32*)&deaths, 32, false, ZCOM_REPFLAG_MOSTRECENT, ZCOM_REPRULE_AUTH_2_ALL , 0);
-	m_node->addReplicationInt( (zS32*)&options.worm_gravity, 32, false, ZCOM_REPFLAG_MOSTRECENT | ZCOM_REPFLAG_RARELYCHANGED, ZCOM_REPRULE_AUTH_2_ALL );
-	m_node->addReplicationInt( (zS32*)&options.teamPlay, 1, false, ZCOM_REPFLAG_MOSTRECENT | ZCOM_REPFLAG_RARELYCHANGED, ZCOM_REPRULE_AUTH_2_ALL );
-	
-	m_node->endReplicationSetup();
-
-	m_isAuthority = authority;
-	if( authority)
-	{
-		m_node->setEventNotification(true, false); // Enables the eEvent_Init.
-		if( !m_node->registerNodeUnique(classID, eZCom_RoleAuthority, network.getZControl() ) )
-			ELOG("Unable to register game authority node.");
-	}else
-	{
-		if( !m_node->registerNodeUnique( classID, eZCom_RoleProxy, network.getZControl() ) )
-			ELOG("Unable to register game requested node.");
-	}
-
-	m_node->applyForZoidLevel(1);
-}
-
+#if 0
 void Game::sendRConMsg( string const& message )
 {
 	ZCom_BitStream *req = new ZCom_BitStream;
@@ -1081,12 +886,7 @@ void Game::sendRConMsg( string const& message )
 	req->addString( message.c_str() );
 	network.getZControl()->ZCom_sendData( network.getServerID(), req, eZCom_ReliableOrdered );
 }
-
-void Game::removeNode()
-{
-	delete m_node;
-	m_node = NULL;
-}
+#endif
 
 bool Game::setMod( const string& modname )
 {
@@ -1156,6 +956,7 @@ fs::path const& Game::getDefaultPath()
 	return m_defaultPath;
 }
 
+#if 0
 BasePlayer* Game::findPlayerWithID( ZCom_NodeID ID )
 {
 	list<BasePlayer*>::iterator playerIter;
@@ -1168,6 +969,7 @@ BasePlayer* Game::findPlayerWithID( ZCom_NodeID ID )
 	}
 	return NULL;
 }
+#endif
 
 void Game::insertExplosion( Explosion* explosion )
 {
@@ -1240,15 +1042,8 @@ BasePlayer* Game::addPlayer( PLAYER_TYPE type, int team, BaseWorm* worm )
 BaseWorm* Game::addWorm(bool isAuthority)
 {
 	BaseWorm* returnWorm = NULL;
-	if ( network.isHost() || network.isClient() )
-	{
-		NetWorm* netWorm = new NetWorm(isAuthority);
-		returnWorm = netWorm;
-	}else
-	{
-		Worm* worm = new Worm();
-		returnWorm = worm;
-	}
+	Worm* worm = new Worm();
+	returnWorm = worm;
 	if ( !returnWorm ) allegro_message("moo");
 #ifdef USE_GRID
 	objects.insertImmediately(returnWorm, Grid::WormColLayer, Grid::WormRenderLayer);
@@ -1267,7 +1062,6 @@ void Game::addBot(int team)
 	{
 		BaseWorm* worm = addWorm(true); 
 		BasePlayer* player = addPlayer(AI, team, worm);
-		if ( network.isHost() ) player->assignNetworkRole(true);
 		//player->assignWorm(worm);
 	}
 }
@@ -1294,6 +1088,7 @@ std::string const& Game::getModName()
 	return m_modName;
 }
 
+#if 0
 void Game::addCRCs(ZCom_BitStream* req)
 {
 	req->addInt(partTypeList.crc(), 32);
@@ -1319,6 +1114,8 @@ bool Game::checkCRCs(ZCom_BitStream& data)
 	
 	return true;
 }
+#endif
+
 /*
 ZCom_Node* Game::getNode()
 {

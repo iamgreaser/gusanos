@@ -16,7 +16,6 @@
 #include "../game.h"
 //#include "../vec.h"
 //#include "../gfx.h"
-#include "../network.h"
 #include "../glua.h"
 #include "util/log.h"
 #include "http.h"
@@ -547,13 +546,16 @@ int l_fetch_server_list(lua_State* L)
 	lua_pushvalue(L, 1);
 	LuaReference ref = lua.createReference();
 	
-	HTTP::Request* req = network.fetchServerList();
+	// FIXME: reinstate the master server when we have appropriate netcode
+	// (the original code is in the inside the zoidcom-replacement branch --GM)
+	//HTTP::Request* req = network.fetchServerList();
+	HTTP::Request* req = NULL;
 	
 	if(!req)
 		return 0;
 
-	network.addHttpRequest(req,
-		boost::bind(serverListCallb, L, ref, _1));
+	//network.addHttpRequest(req,
+	//	boost::bind(serverListCallb, L, ref, _1));
 
 	return 0;
 }

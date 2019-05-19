@@ -11,8 +11,6 @@
 #include "glua.h"
 #include "util/math_func.h"
 
-#include "network.h" //TEMP
-
 #include <allegro.h>
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>

@@ -4,7 +4,6 @@
 #include <cassert>
 #include <climits>
 #include <iostream>
-#include <zoidcom.h>
 #include <stdexcept>
 
 template<class T>
@@ -192,78 +191,5 @@ public:
 
 typedef BasicAngle<int> Angle;
 typedef BasicAngle<int> AngleDiff;
-
-template<class T>
-class BasicAngleReplicator : public ZCom_ReplicatorBasic
-{
-private:
-	typedef BasicAngle<T> Type;
-	Type* m_ptr;
-	Type  m_old;
-	
-public:
-
-	BasicAngleReplicator(ZCom_ReplicatorSetup* setup, Type* data)
-	: ZCom_ReplicatorBasic(setup),
-	m_ptr(data)
-	{
-		m_flags |= ZCOM_REPLICATOR_INITIALIZED;
-	}
-	
-	// TODO: Implement this for safeness sake
-	ZCom_Replicator* Duplicate(ZCom_Replicator *_dest)
-	{
-		if(_dest)
-			*_dest = *this;
-		else
-			return new BasicAngleReplicator(*this);
-		return 0;
-	}
-	
-	bool checkState()
-	{
-		bool res = m_old != *m_ptr;
-		m_old = *m_ptr;
-		return res;
-	}
-	
-	bool checkInitialState() { return true; }
-	
-	void packData(ZCom_BitStream *stream)
-	{
-		stream->addInt(*m_ptr, Type::prec);
-	}
-	
-	void unpackData(ZCom_BitStream* stream, bool store, zU32 estimated_time_sent)
-	{
-		Type angle(T(stream->getInt(Type::prec)));
-		if(store)
-			*m_ptr = angle;
-	}
-	
-	void Process(eZCom_NodeRole localrole, zU32 simulation_time_passed) {}
-	
-	void* peekData()
-	{
-		ZCom_BitStream* stream = getPeekStream();
-		assert(stream);
-		
-		Type* ret = new Type(T(stream->getInt(Type::prec)));
-	
-		peekDataStore(ret);
-		
-		return (void *)ret;
-	}
-	
-	void clearPeekData()
-	{
-		Type* buf = (Type *)peekDataRetrieve();
-		delete buf;
-	}
-};
-
-typedef BasicAngleReplicator<int> AngleReplicator;
-typedef BasicAngleReplicator<int> AngleDiffReplicator;
-
 
 #endif //GUSANOS_ANGLE_H

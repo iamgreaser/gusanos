@@ -1,7 +1,6 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
-#include <zoidcom.h>
 #include "timer_event.h"
 //#include "luaapi/types.h"
 #include "glua.h"
@@ -50,8 +49,7 @@ public:
 	
 	void actionStart( Actions action );
 	void actionStop( Actions action );
-	void recieveMessage( ZCom_BitStream* data );
-	
+
 	void delay( int time );
 	void useAmmo( int amount );
 	BaseWorm* getOwner();
@@ -70,11 +68,9 @@ private:
 	
 	void reload();
 	void outOfAmmo();
-	
+
 	bool m_outOfAmmo;
-	bool outOfAmmoCheck;
-	bool sentOutOfAmmo;
-	
+
 	bool primaryShooting;
 	int ammo;
 	int inactiveTime;

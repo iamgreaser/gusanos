@@ -20,7 +20,6 @@
 #include <boost/filesystem/path.hpp>
 using boost::shared_ptr;
 namespace fs = boost::filesystem;
-#include <zoidcom.h>
 
 class BasePlayer;
 class BaseWorm;
@@ -30,7 +29,6 @@ class WeaponType;
 class Particle;
 class PartType;
 class Explosion;
-class ZCom_BitStream;
 struct LuaEventDef;
 #ifndef DEDSERV
 class Sound1D;
@@ -134,8 +132,6 @@ public:
 	
 	
 		
-	static ZCom_ClassID  classID;
-
 	enum PLAYER_TYPE
 	{
 		OWNER = 0,
@@ -181,21 +177,16 @@ public:
 	void refreshLevels();
 	void refreshMods();
 	bool reloadModWithoutMap();
-	void createNetworkPlayers();
 	bool changeLevel(const std::string& level, bool refresh = true);
 	bool changeLevelCmd(const std::string& level);
 	bool hasLevel(std::string const& level);
 	bool hasMod(std::string const& mod);
 	void runInitScripts();
 	void addBot( int team = -1 );
-	BasePlayer* findPlayerWithID( ZCom_NodeID ID );
 	BasePlayer* addPlayer( PLAYER_TYPE type, int team = -1, BaseWorm* worm = 0 );
 	BaseWorm* addWorm(bool isAuthority); // Creates a worm class depending on the network condition.
 	//static ZCom_Node* getNode();
-	static void sendLuaEvent(LuaEventDef* event, eZCom_SendMode mode, zU8 rules, ZCom_BitStream* data, ZCom_ConnID connID);
-	
-	void assignNetworkRole( bool authority );
-	void removeNode();
+	//static void sendLuaEvent(LuaEventDef* event, eZCom_SendMode mode, zU8 rules, ZCom_BitStream* data, ZCom_ConnID connID);
 	
 	void applyLevelEffect( LevelEffect* effect, int x, int y );
 	
@@ -243,8 +234,8 @@ public:
 	
 	std::string const& getModName();
 	
-	static void addCRCs(ZCom_BitStream* req);
-	static bool checkCRCs(ZCom_BitStream& data);
+	//static void addCRCs(ZCom_BitStream* req);
+	//static bool checkCRCs(ZCom_BitStream& data);
 	
 	MessageQueue msg;
 	

@@ -23,9 +23,6 @@
 #include "util/angle.h"
 #include "util/log.h"
 #include "util/math_func.h"
-#include "network.h"
-#include <zoidcom.h>
-#include "posspd_replicator.h"
 
 #include <vector>
 #include <iostream>
@@ -40,71 +37,7 @@ namespace
 	boost::pool<> particlePool(sizeof(Particle));
 }
 
-class ParticleInterceptor : public ZCom_NodeReplicationInterceptor
-{
-public:
-	enum type
-	{
-		Position
-	};
-	
-	ParticleInterceptor( Particle* parent_ )
-	: parent(parent_)
-	{
-	}
-
-	bool inPreUpdateItem(ZCom_Node *_node, ZCom_ConnID _from, eZCom_NodeRole _remote_role, ZCom_Replicator *_replicator, zU32 _estimated_time_sent)
-	{ return true; }
-
-	// Not used virtual stuff
-	void outPreReplicateNode(ZCom_Node *_node, ZCom_ConnID _to, eZCom_NodeRole _remote_role)
-	{
-		ZCom_BitStream *type = new ZCom_BitStream;
-		type->addInt(parent->m_type->getIndex(), 16);
-		if(parent->m_owner)
-			type->addInt(parent->m_owner->getNodeID(), 32);
-		else
-			type->addInt(0, 32);
-		parent->m_node->setAnnounceData( type );
-	}
-	
-	void outPreDereplicateNode(ZCom_Node *_node, ZCom_ConnID _to, eZCom_NodeRole _remote_role)
-	{}
-	
-	bool outPreUpdate(ZCom_Node *_node, ZCom_ConnID _to, eZCom_NodeRole _remote_role)
-	{ return true; }
-	
-	bool outPreUpdateItem(ZCom_Node* node, ZCom_ConnID from, eZCom_NodeRole remote_role, ZCom_Replicator* replicator)
-	{
-		switch ( replicator->getSetup()->getInterceptID() )
-		{
-			case Position:
-				if(!(parent->flags & Particle::RepPos))
-				{
-					return false;
-				}
-			break;
-		}
-		
-		return true;
-	}
-	
-	void outPostUpdate(ZCom_Node *_node, ZCom_ConnID _to, eZCom_NodeRole _remote_role, zU32 _rep_bits, zU32 _event_bits, zU32 _meta_bits)
-	{}
-	
-	bool inPreUpdate(ZCom_Node *_node, ZCom_ConnID _from, eZCom_NodeRole _remote_role)
-	{ return true; }
-	
-	void inPostUpdate(ZCom_Node *_node, ZCom_ConnID _from, eZCom_NodeRole _remote_role, zU32 _rep_bits, zU32 _event_bits, zU32 _meta_bits)
-	{}
-
-private:
-	Particle* parent;
-};
-
 LuaReference Particle::metaTable;
-
-ZCom_ClassID Particle::classID = ZCom_Invalid_ID;
 
 void* Particle::operator new(size_t count)
 {
@@ -127,7 +60,6 @@ Particle::Particle(PartType *type, Vec pos_, Vec spd_, int dir, BasePlayer* owne
 , m_alphaDest(255), m_sprite(m_type->sprite)
 #endif
 , m_origin(pos_)
-, m_node(0), interceptor(0)
 {
 	m_type->touch();
 	
@@ -166,51 +98,6 @@ Particle::~Particle()
 #ifndef DEDSERV
 	delete m_animator;
 #endif
-	delete m_node;
-	delete interceptor;
-}
-
-void Particle::assignNetworkRole( bool authority )
-{
-	m_node = new ZCom_Node();
-	/* operator new never returns 0
-	if (!m_node)
-	{
-		allegro_message("ERROR: Unable to create particle node.");
-	}*/
-
-	m_node->beginReplicationSetup(0);
-	
-		static ZCom_ReplicatorSetup posSetup( ZCOM_REPFLAG_MOSTRECENT | ZCOM_REPFLAG_INTERCEPT, ZCOM_REPRULE_AUTH_2_ALL, ParticleInterceptor::Position, -1, 1000);
-		
-		m_node->addReplicator(new PosSpdReplicator( &posSetup, &pos, &spd ), true);
-		
-	m_node->endReplicationSetup();
-	
-	interceptor = new ParticleInterceptor( this );
-	m_node->setReplicationInterceptor(interceptor);
-
-	//DLOG("Registering node, type " << m_type->getIndex() << " of " << partTypeList.size());
-	if( authority )
-	{
-		
-		//DLOG("Announce data set");
-		m_node->setEventNotification(true, false); // Enables the eEvent_Init.
-		if( !m_node->registerNodeDynamic(classID, network.getZControl() ) )
-			allegro_message("ERROR: Unable to register particle authority node.");
-	}else
-	{
-		m_node->setEventNotification(false, true); // Same but for the remove event.
-		//DLOG("Event notification set");
-		if( !m_node->registerRequestedNode( classID, network.getZControl() ) )
-			allegro_message("ERROR: Unable to register particle requested node.");
-	}
-	
-	//DLOG("Node registered");
-
-	m_node->applyForZoidLevel(1);
-	
-	//DLOG("Applied for zoidlevel");
 }
 
 inline Vec getCorrection( const Vec& objPos, const Vec& pointPos, float radius )
@@ -270,50 +157,6 @@ Vec getCorrectionBox( const Vec& objPos, const IVec& boxPos, float radius )
 
 void Particle::think()
 {
-
-	if ( m_node )
-	{
-		while ( m_node->checkEventWaiting() )
-		{
-			eZCom_Event type;
-			eZCom_NodeRole    remote_role;
-			ZCom_ConnID       conn_id;
-			
-			ZCom_BitStream *data = m_node->getNextEvent(&type, &remote_role, &conn_id);
-			switch ( type )
-			{
-				case eZCom_EventUser:
-				if ( data )
-				{
-					//TODO: NetEvents event = (NetEvents)Encoding::decode(*data, EVENT_COUNT);
-					
-					// Only one event now, lua event
-					int index = data->getInt(8);
-					if(LuaEventDef* event = network.indexToLuaEvent(Network::LuaEventGroup::Particle, index))
-					{
-						event->call(getLuaReference(), data);
-					}
-				}
-				break;
-				
-				case eZCom_EventRemoved:
-				{
-					deleteMe = true;
-				}
-				break;
-				
-				case eZCom_EventInit:
-				{
-					LuaReference r = m_type->networkInit.get();
-					if(r)
-						(lua.call(r), getLuaReference(), conn_id)();
-				}
-				break;
-				
-				default: break;
-			}
-		}
-	}
 	if ( deleteMe ) return;
 	
 	for ( int i = 0; i < m_type->repeat; ++i)
@@ -475,10 +318,7 @@ void Particle::damage( float amount, BasePlayer* damager )
 
 void Particle::remove()
 {
-	if ( !m_node || m_node->getRole() == eZCom_RoleAuthority )
-	{
-		deleteMe = true;
-	}
+	deleteMe = true;
 }
 
 #ifndef DEDSERV
@@ -553,22 +393,6 @@ void Particle::draw(Viewport* viewport)
 }
 #endif
 
-void Particle::sendLuaEvent(LuaEventDef* event, eZCom_SendMode mode, zU8 rules, ZCom_BitStream* userdata, ZCom_ConnID connID)
-{
-	if(!m_node) return;
-	ZCom_BitStream* data = new ZCom_BitStream;
-	//addEvent(data, LuaEvent);
-	data->addInt(event->idx, 8);
-	if(userdata)
-	{
-		data->addBitStream(userdata);
-	}
-	if(!connID)
-		m_node->sendEvent(mode, rules, data);
-	else
-		m_node->sendEventDirect(mode, data, connID);
-}
-
 void Particle::makeReference()
 {
 	lua.pushFullReference(*this, metaTable);
@@ -589,6 +413,5 @@ LuaReference Particle::getLuaReference()
 
 void Particle::finalize()
 {
-	delete m_node; m_node = 0;
 	m_type = 0; // This pointer may become invalid at any moment
 }

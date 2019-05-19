@@ -11,7 +11,6 @@
 #include "sprite_set.h"
 #include "sprite.h"
 #include "luaapi/context.h"
-#include "network.h"
 
 #include <iostream>
 
@@ -29,9 +28,6 @@ Weapon::Weapon(WeaponType* type, BaseWorm* owner)
 	reloading = false;
 	reloadTime = 0;
 	m_outOfAmmo = false;
-	
-	sentOutOfAmmo = false;
-	outOfAmmoCheck = false;
 	
 	foreach(i, m_type->timer)
 	{
@@ -106,17 +102,7 @@ void Weapon::think( bool isFocused, size_t index )
 		{
 			if (m_type->primaryShoot)
 			{
-				if ( m_owner->getRole() != eZCom_RoleProxy || !m_type->syncHax )
-				{
-					m_type->primaryShoot->run(m_owner, NULL, NULL, this );
-					if ( m_owner->getRole() == eZCom_RoleAuthority && m_type->syncHax )
-					{
-						ZCom_BitStream* data = new ZCom_BitStream;
-						data->addInt(SHOOT, 8);
-						m_owner->sendWeaponMessage( index, data, ZCOM_REPRULE_AUTH_2_PROXY );
-						delete data;
-					}
-				}
+				m_type->primaryShoot->run(m_owner, NULL, NULL, this );
 			}
 		}
 	}
@@ -126,62 +112,18 @@ void Weapon::think( bool isFocused, size_t index )
 		{
 			m_outOfAmmo = true;
 			//std::cout << "out of ammo" << endl;
-			if ( !network.isClient() || !m_type->syncReload )
-			{
-				outOfAmmo();
-				
-				if ( network.isHost() && m_type->syncReload )
-				{
-					ZCom_BitStream* data = new ZCom_BitStream;
-					data->addInt( OUTOFAMMO , 8);
-					m_owner->sendWeaponMessage( index, data );
-					delete data;
-					sentOutOfAmmo = true;
-				}
-			}
-			else
-			{
-				ZCom_BitStream* data = new ZCom_BitStream;
-				data->addInt(OutOfAmmoCheck, 8);
-				m_owner->sendWeaponMessage( index, data, ZCOM_REPRULE_OWNER_2_AUTH );
-				delete data;
-				//std::cout << "sent check plz message" << endl;
-			}
+			outOfAmmo();
 		}
 		if ( reloading )
 		{
-			if ( reloadTime > 0 ) --reloadTime;
-			else if ( !network.isClient() || !m_type->syncReload )
+			if ( reloadTime > 0 )
+			{
+				--reloadTime;
+			}
+			else
 			{
 				reload();
-				
-				if ( network.isHost() && m_type->syncReload )
-				{
-					ZCom_BitStream* data = new ZCom_BitStream;
-					data->addInt( RELOADED , 8);
-					m_owner->sendWeaponMessage( index, data );
-					delete data;
-				}
 			}
-		}
-	}
-	
-	if ( outOfAmmoCheck )
-	{
-		//std::cout << "checking out of ammo" << endl;
-		outOfAmmoCheck = false;
-		if ( ammo > 0 )
-		{
-			//std::cout << "Sending correction" << endl;
-			ZCom_BitStream* data = new ZCom_BitStream;
-			data->addInt(AmmoCorrection, 8);
-			data->addInt(ammo, 32);
-			m_owner->sendWeaponMessage(index, data, ZCOM_REPRULE_AUTH_2_OWNER );
-		}
-		else
-		{
-			//std::cout << "Everything was in order" << endl;
-			sentOutOfAmmo = false;
 		}
 	}
 }
@@ -231,46 +173,6 @@ void Weapon::drawTop(BITMAP* where,int x, int y)
 	}
 }
 #endif
-
-void Weapon::recieveMessage( ZCom_BitStream* data )
-{
-	Events event = static_cast<Events>(data->getInt(8));
-	switch ( event )
-	{
-		case OUTOFAMMO:
-		{
-			outOfAmmo();
-		}
-		break;
-		
-		case RELOADED:
-		{
-			reload();
-		}
-		break;
-		
-		case SHOOT:
-		{
-			m_type->primaryShoot->run(m_owner, NULL, NULL, this );
-			ammo--;
-		}
-		break;
-		
-		case OutOfAmmoCheck:
-		{
-			outOfAmmoCheck = true;
-		}
-		break;
-		
-		case AmmoCorrection:
-		{
-			ammo = data->getInt(32);
-			m_outOfAmmo = false;
-		}
-		
-		case EventsCount: break;
-	}
-}
 
 void Weapon::outOfAmmo()
 {

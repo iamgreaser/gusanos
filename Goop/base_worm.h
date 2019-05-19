@@ -1,7 +1,6 @@
 #ifndef BASE_WORM_H
 #define BASE_WORM_H
 
-#include "zoidcom.h"
 #include "util/vec.h"
 #include "util/angle.h"
 #include "base_object.h"
@@ -118,11 +117,6 @@ public:
 	AngleDiff aimSpeed; // Useless to add setters and getters for this
 	Angle aimAngle;
 	
-	virtual void sendWeaponMessage( int index, ZCom_BitStream* data, zU8 repRules = ZCOM_REPRULE_AUTH_2_ALL ) {}
-	virtual eZCom_NodeRole getRole()
-	{
-		return eZCom_RoleUndefined;
-	}
 	/*
 	virtual LuaReference getLuaReference();
 	virtual void finalize();
@@ -131,9 +125,7 @@ public:
 	virtual void makeReference();
 	virtual void finalize();
 	
-	virtual void sendLuaEvent(LuaEventDef* event, eZCom_SendMode mode, zU8 rules, ZCom_BitStream* userdata, ZCom_ConnID connID)
-	{
-	}
+	//virtual void sendLuaEvent(LuaEventDef* event, eZCom_SendMode mode, zU8 rules, ZCom_BitStream* userdata, ZCom_ConnID connID) {}
 	
 /*
 	void* operator new(size_t count);

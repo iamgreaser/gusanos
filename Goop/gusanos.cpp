@@ -6,7 +6,6 @@
 
 #include "level.h"
 #include "game.h"
-#include "updater.h"
 #include "part_type.h"
 #include "particle.h"
 #include "worm.h"
@@ -25,7 +24,6 @@
 #endif
 #include "sprite_set.h"
 #include "player_ai.h"
-#include "network.h"
 
 
 #include "script.h"
@@ -59,7 +57,6 @@ void timerUpdate(void) { timer++; } END_OF_FUNCTION(timerUpdate);
 void exit()
 {
 	quit = true;
-	network.disconnect();
 }
 
 string exitCmd(list<string> const& args)
@@ -108,7 +105,7 @@ try
 #endif
 
 	//main game loop
-	while (!quit || !network.isDisconnected())
+	while (!quit)
 	{
 
 		while ( logicLast + 1 <= timer )
@@ -163,8 +160,6 @@ try
 			}
 			
 			game.think();
-			updater.think(); // TODO: Move?
-			
 #ifndef DEDSERV
 			sfx.think(); // WARNING: THIS ¡MUST! BE PLACED BEFORE THE OBJECT DELETE LOOP
 #endif
@@ -205,8 +200,6 @@ try
 					game.players.erase(iter);
 				}
 			}
-
-			network.update();
 
 #ifndef DEDSERV
 			console.checkInput();
@@ -259,7 +252,7 @@ try
 			{
 				game.infoFont->draw(gfx.buffer, "OBJECTS: \01303" + cast<string>(game.objects.size()), 5, 10, 0, 255, 255, 255, 255, Font::Formatting);
 				game.infoFont->draw(gfx.buffer, "PLAYERS: \01303" + cast<string>(game.players.size()), 5, 15, 0, 255, 255, 255, 255, Font::Formatting);
-				game.infoFont->draw(gfx.buffer, "PING:    \01303" + cast<string>(network.getServerPing()), 5, 20, 0, 255, 255, 255, 255, Font::Formatting);
+				//game.infoFont->draw(gfx.buffer, "PING:    \01303" + cast<string>(network.getServerPing()), 5, 20, 0, 255, 255, 255, 255, Font::Formatting);
 				game.infoFont->draw(gfx.buffer, "LUA MEM: \01303" + cast<string>(lua_gc(lua, LUA_GCCOUNT, 0)), 5, 25, 0, 255, 255, 255, 255, Font::Formatting);
 			}
 						
@@ -362,7 +355,7 @@ try
 	}
 	
 	//network.disconnect(); // If we haven't already, it's too late
-	network.shutDown();
+	//network.shutDown();
 	game.unload();
 #ifndef DEDSERV
 	OmfgGUI::menu.destroy();

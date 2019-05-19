@@ -6,12 +6,6 @@
 #include <utility>
 #include "util/tcp.h"
 
-#define HAS_ZOIDCOM
-
-#ifdef HAS_ZOIDCOM // TODO: Use Zoidcom for async hostname look-up
-#include <zoidcom.h>
-#endif
-
 namespace HTTP
 {
 
