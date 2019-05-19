@@ -19,13 +19,10 @@ Goop/gfx.o \
 Goop/glua.o \
 Goop/gusanos.o \
 Goop/hash_table.o \
-Goop/keyboard.o \
-Goop/keys.o \
 Goop/level.o \
 Goop/level_effect.o \
 Goop/material.o \
 Goop/menu.o \
-Goop/mouse.o \
 Goop/ninjarope.o \
 Goop/noise_line.o \
 Goop/objects_list.o \
@@ -49,8 +46,9 @@ Goop/timer_event.o \
 Goop/viewport.o \
 Goop/weapon.o \
 Goop/weapon_type.o \
-Goop/worm.o
+Goop/worm.o \
 
 include Goop/blitters/objects.make
+include Goop/input/objects.make
 include Goop/loaders/objects.make
 include Goop/lua/objects.make

@@ -1,8 +1,8 @@
 #ifndef DEDSERV
 
 #include "menu.h"
-#include "keyboard.h"
-#include "mouse.h"
+#include "input/keyboard.h"
+#include "input/mouse.h"
 #include "gfx.h"
 #include "blitters/blitters.h"
 #include "font.h"

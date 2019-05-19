@@ -26,8 +26,8 @@
 #include "sound1d.h"
 #include "font.h"
 #include "menu.h"
-#include "keyboard.h"
-#include "mouse.h"
+#include "input/keyboard.h"
+#include "input/mouse.h"
 #include "player_input.h"
 #include "viewport.h"
 #endif //DEDSERV

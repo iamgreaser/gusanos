@@ -1,7 +1,7 @@
 #include "gconsole.h"
 #ifndef DEDSERV
-#include "keyboard.h"
-#include "keys.h"
+#include "input/keyboard.h"
+#include "input/keys.h"
 #include "font.h"
 #include "sprite_set.h"
 #include "sprite.h"

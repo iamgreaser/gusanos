@@ -3,30 +3,30 @@
 #ifndef DEDSERV
 #include "lua/bindings-gui.h"
 #endif
-#include "bindings-math.h"
-#include "bindings-network.h"
-#include "bindings-objects.h"
-#include "bindings-resources.h"
-#include "bindings-gfx.h"
-#include "bindings-game.h"
+#include "lua/bindings-math.h"
+#include "lua/bindings-network.h"
+#include "lua/bindings-objects.h"
+#include "lua/bindings-resources.h"
+#include "lua/bindings-gfx.h"
+#include "lua/bindings-game.h"
 
 #include "luaapi/types.h"
 #include "luaapi/macros.h"
 
-#include "../game.h"
-//#include "../vec.h"
-//#include "../gfx.h"
-#include "../glua.h"
+#include "game.h"
+//#include "vec.h"
+//#include "gfx.h"
+#include "glua.h"
 #include "util/log.h"
 #include "http.h"
 
-#include "../gconsole.h"
-#include "../gusanos.h"
+#include "gconsole.h"
+#include "gusanos.h"
 #ifndef DEDSERV
-#include "../keys.h"
-#include "../menu.h"
-#include "../blitters/context.h"
-#include "../viewport.h"
+#include "input/keys.h"
+#include "menu.h"
+#include "blitters/context.h"
+#include "viewport.h"
 #endif
 #include <cmath>
 #include <string>

@@ -13,14 +13,14 @@
 #include "util/macros.h"
 //#include "util/log.h"
 #ifndef DEDSERV
-#include "mouse.h"
+#include "input/mouse.h"
 #include "viewport.h"
 #include "font.h"
 #include "gfx.h"
 #include "sfx.h"
 #include "menu.h"
 #include "distortion.h"
-#include "keyboard.h"
+#include "input/keyboard.h"
 #endif
 #include "sprite_set.h"
 #include "player_ai.h"
