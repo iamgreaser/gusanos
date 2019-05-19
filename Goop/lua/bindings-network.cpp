@@ -6,7 +6,7 @@
 
 #include "game.h"
 #include "player/base_player.h"
-#include "base_worm.h"
+#include "worm/base_worm.h"
 #include "particle.h"
 #include "util/sockets.h"
 #include "util/log.h"

@@ -4,7 +4,6 @@ Goop/animators.o \
 Goop/base_action.o \
 Goop/base_animator.o \
 Goop/base_object.o \
-Goop/base_worm.o \
 Goop/detect_event.o \
 Goop/distortion.o \
 Goop/events.o \
@@ -41,10 +40,10 @@ Goop/timer_event.o \
 Goop/viewport.o \
 Goop/weapon.o \
 Goop/weapon_type.o \
-Goop/worm.o \
 
 include Goop/blitters/objects.make
 include Goop/input/objects.make
 include Goop/loaders/objects.make
 include Goop/lua/objects.make
 include Goop/player/objects.make
+include Goop/worm/objects.make

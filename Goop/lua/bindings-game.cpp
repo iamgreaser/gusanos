@@ -11,7 +11,7 @@
 #include "player/base_player.h"
 #include "player/player_options.h"
 #include "player/player.h"
-#include "base_worm.h"
+#include "worm/base_worm.h"
 #include "level.h"
 #include "util/log.h"
 #include "util/stringbuild.h"

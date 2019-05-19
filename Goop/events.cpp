@@ -1,6 +1,6 @@
 #include "events.h"
 
-#include "base_worm.h"
+#include "worm/base_worm.h"
 #include "base_object.h"
 #include "base_action.h"
 //#include "game_actions.h"

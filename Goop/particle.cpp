@@ -2,7 +2,7 @@
 
 #include "game.h"
 #include "base_object.h"
-#include "base_worm.h"
+#include "worm/base_worm.h"
 #include "player/base_player.h"
 #include "part_type.h"
 #ifndef DEDSERV

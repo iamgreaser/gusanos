@@ -8,7 +8,7 @@
 #include "game.h"
 #include "part_type.h"
 #include "particle.h"
-#include "worm.h"
+#include "worm/worm.h"
 #include "player/player.h"
 #include "util/macros.h"
 //#include "util/log.h"

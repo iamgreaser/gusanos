@@ -17,7 +17,7 @@
 #include "util/log.h"
 #include "base_object.h"
 #include "weapon.h"
-#include "worm.h"
+#include "worm/worm.h"
 #include "level_effect.h"
 
 #include "glua.h"

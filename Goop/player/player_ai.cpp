@@ -1,7 +1,7 @@
 #include "player_ai.h"
 #include "player_options.h"
 #include "base_player.h"
-#include "worm.h"
+#include "worm/worm.h"
 #include "game.h"
 #include "weapon.h"
 #include "util/angle.h"

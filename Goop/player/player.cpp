@@ -1,6 +1,6 @@
-#include "player.h"
-#include "player_options.h"
-#include "worm.h"
+#include "player/player.h"
+#include "player/player_options.h"
+#include "worm/worm.h"
 #ifndef DEDSERV
 #include "viewport.h"
 #endif

@@ -7,7 +7,7 @@
 
 #include "player/base_player.h"
 #include "player/player.h"
-#include "base_worm.h"
+#include "worm/base_worm.h"
 #include "particle.h"
 #include "weapon.h"
 #include "weapon_type.h"

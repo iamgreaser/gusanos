@@ -6,7 +6,7 @@
 #include "sfx.h"
 #include "gfx.h"
 #include <allegro.h>
-#include "base_worm.h"
+#include "worm/base_worm.h"
 #include "player/base_player.h"
 #include "player/player.h"
 #include "glua.h"

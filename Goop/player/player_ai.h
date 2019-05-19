@@ -1,8 +1,8 @@
 #ifndef AI_H
 #define AI_H
 
-#include "base_player.h"
-#include "worm.h"
+#include "player/base_player.h"
+#include "worm/worm.h"
 #include "base_object.h"
 #include "util/angle.h"
 #include "util/vec.h"

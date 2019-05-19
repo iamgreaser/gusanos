@@ -1,7 +1,7 @@
 #include "game.h"
 
-#include "base_worm.h"
-#include "worm.h"
+#include "worm/base_worm.h"
+#include "worm/worm.h"
 #include "part_type.h"
 #include "exp_type.h"
 #include "weapon_type.h"

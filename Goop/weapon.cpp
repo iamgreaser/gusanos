@@ -1,7 +1,7 @@
 #include "weapon.h"
 #include "weapon_type.h"
 #include "events.h"
-#include "base_worm.h"
+#include "worm/base_worm.h"
 #include "game.h"
 #include "util/vec.h"
 #include "util/angle.h"

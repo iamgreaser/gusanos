@@ -1,5 +1,5 @@
 #include "base_player.h"
-#include "worm.h"
+#include "worm/worm.h"
 #include "ninjarope.h"
 #include "player_options.h"
 #include "objects_list.h"
