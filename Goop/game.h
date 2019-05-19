@@ -2,10 +2,10 @@
 #define GAME_H
 
 #include "level.h"
-//#include "base_object.h"
+//#include "object/base_object.h"
 //#include "base_action.h"
-//#include "objects_list.h"
-#include "object_grid.h"
+//#include "object/objects_list.h"
+#include "object/object_grid.h"
 #include "message_queue.h"
 
 #ifndef DEDSERV

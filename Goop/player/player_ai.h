@@ -3,7 +3,7 @@
 
 #include "player/base_player.h"
 #include "worm/worm.h"
-#include "base_object.h"
+#include "object/base_object.h"
 #include "util/angle.h"
 #include "util/vec.h"
 

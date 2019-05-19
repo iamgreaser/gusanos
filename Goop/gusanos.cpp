@@ -6,8 +6,8 @@
 
 #include "level.h"
 #include "game.h"
-#include "part_type.h"
-#include "particle.h"
+#include "object/part_type.h"
+#include "object/particle.h"
 #include "worm/worm.h"
 #include "player/player.h"
 #include "util/macros.h"

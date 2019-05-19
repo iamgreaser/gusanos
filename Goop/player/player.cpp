@@ -4,7 +4,7 @@
 #ifndef DEDSERV
 #include "viewport.h"
 #endif
-#include "ninjarope.h"
+#include "object/ninjarope.h"
 
 //#include <allegro.h>
 

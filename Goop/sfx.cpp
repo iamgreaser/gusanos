@@ -4,7 +4,7 @@
 
 #include "sfx.h"
 #include "gconsole.h"
-#include "base_object.h"
+#include "object/base_object.h"
 #include "util/macros.h"
 #include <boost/assign/list_inserter.hpp>
 using namespace boost::assign;

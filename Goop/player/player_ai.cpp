@@ -1,9 +1,9 @@
-#include "player_ai.h"
-#include "player_options.h"
-#include "base_player.h"
+#include "player/player_ai.h"
+#include "player/player_options.h"
+#include "player/base_player.h"
 #include "worm/worm.h"
 #include "game.h"
-#include "weapon.h"
+#include "object/weapon.h"
 #include "util/angle.h"
 #include "util/vec.h"
 #include <vector>

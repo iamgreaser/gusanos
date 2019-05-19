@@ -6,22 +6,22 @@
 #include "luaapi/macros.h"
 #include "luaapi/classes.h"
 
-#include "../game.h"
-#include "../gfx.h"
-#include "../script.h"
+#include "game.h"
+#include "gfx.h"
+#include "script.h"
 #ifndef DEDSERV
-#include "../sound.h"
+#include "sound.h"
 #endif
-#include "../part_type.h"
-#include "../weapon_type.h"
-#include "../glua.h"
+#include "object/part_type.h"
+#include "object/weapon_type.h"
+#include "glua.h"
 
 //TEMP:
-#include "../sprite_set.h"
-#include "../sprite.h"
+#include "sprite_set.h"
+#include "sprite.h"
 
 #ifndef DEDSERV
-#include "../font.h"
+#include "font.h"
 #endif
 #include <cmath>
 #include <string>

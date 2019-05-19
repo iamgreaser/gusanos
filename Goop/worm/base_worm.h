@@ -3,7 +3,7 @@
 
 #include "util/vec.h"
 #include "util/angle.h"
-#include "base_object.h"
+#include "object/base_object.h"
 #include <vector>
 #include "luaapi/types.h"
 

@@ -1,7 +1,7 @@
 #include "detect_event.h"
 
 #include "events.h"
-#include "base_object.h"
+#include "object/base_object.h"
 #include "game.h"
 #include "util/macros.h"
 

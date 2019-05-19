@@ -1,10 +1,10 @@
 #include "base_player.h"
 #include "worm/worm.h"
-#include "ninjarope.h"
+#include "object/ninjarope.h"
 #include "player_options.h"
-#include "objects_list.h"
+#include "object/objects_list.h"
 #include "gconsole.h"
-#include "weapon_type.h"
+#include "object/weapon_type.h"
 #include "util/log.h"
 
 #include "glua.h"

@@ -4,10 +4,10 @@
 #include "util/angle.h"
 #include "util/log.h"
 #include "game.h"
-#include "base_object.h"
+#include "object/base_object.h"
 #include "player/base_player.h"
-#include "weapon_type.h"
-#include "particle.h"
+#include "object/weapon_type.h"
+#include "object/particle.h"
 #include "player/player_options.h"
 #include "player/player.h"
 #ifndef DEDSERV
@@ -20,8 +20,8 @@
 #include "font.h"
 #include "blitters/blitters.h"
 #endif
-#include "weapon.h"
-#include "ninjarope.h"
+#include "object/weapon.h"
+#include "object/ninjarope.h"
 
 #include "glua.h"
 #include "luaapi/context.h"

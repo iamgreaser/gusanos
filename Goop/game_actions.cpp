@@ -1,10 +1,10 @@
 #include "game_actions.h"
 
 #include "game.h"
-//#include "particle.h"
-#include "part_type.h"
-#include "explosion.h"
-#include "exp_type.h"
+//#include "object/particle.h"
+#include "object/part_type.h"
+#include "object/explosion.h"
+#include "object/exp_type.h"
 #ifndef DEDSERV
 #include "sound.h"
 #include "sound1d.h"
@@ -15,8 +15,8 @@
 #include "util/vec.h"
 #include "util/macros.h"
 #include "util/log.h"
-#include "base_object.h"
-#include "weapon.h"
+#include "object/base_object.h"
+#include "object/weapon.h"
 #include "worm/worm.h"
 #include "level_effect.h"
 

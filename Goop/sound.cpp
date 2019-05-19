@@ -5,7 +5,7 @@
 #include "sfx.h"
 #include "resource_list.h"
 #include "util/math_func.h"
-#include "base_object.h"
+#include "object/base_object.h"
 
 #include <string>
 #include <iostream>
