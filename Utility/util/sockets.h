@@ -34,15 +34,22 @@ namespace Sockets
 struct Addrinfo : public addrinfo
 {
 	Addrinfo(addrinfo const* p);
-	
+
 	~Addrinfo();
 };
 
+class Socket
+{
+public:
+	Socket(int family, int socktype, int protocol);
+	void socketNonBlock(void);
+	bool connect(Addrinfo* addr);
+	void close(void);
+protected:
+	int s;
+};
+
 Addrinfo* resolveHost(std::string const& name, int const& port);
-
-int socketNonBlock();
-
-bool connect(int s, Addrinfo* addr);
 
 }
 

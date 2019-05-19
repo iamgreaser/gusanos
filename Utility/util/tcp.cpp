@@ -9,20 +9,6 @@ Socket::~Socket()
 	close();
 }
 
-void Socket::close()
-{
-	if(s)
-	{
-#ifdef WINDOWS
-		closesocket(s);
-#else
-		::close(s);
-#endif
-		s = 0;
-	}
-}
-
-
 bool Socket::think()
 {
 	if(connecting)

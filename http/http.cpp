@@ -258,18 +258,14 @@ Request* Host::query(
 	if(!hp || options.changed) // Address not resolved
 	{
 		options.changed = false;
-		delete hp; hp = 0;
-		if(!(hp = Sockets::resolveHost( connHost, connPort )))
-			return 0;
+		delete hp; hp = NULL;
+		hp = Sockets::resolveHost( connHost, connPort );
+		if( hp == NULL )
+		{
+			return NULL;
+		}
 	}
 	
-	int s;
-	if((s = Sockets::socketNonBlock()) < 0)
-		return 0;
-
-	if(!Sockets::connect(s, hp))
-		return 0;
-
 	std::stringstream ss;
 	if (options.hasProxy)
 	{
@@ -300,7 +296,15 @@ Request* Host::query(
 
 	//cout << "Returning request" << endl;
 
-	return new Request(s, ss.str(), data);
+	Request* request = new Request(hp->ai_family, ss.str(), data);
+	request->socketNonBlock();
+	if( !request->connect(hp) )
+	{
+		delete request;
+		return NULL;
+	}
+
+	return request;
 }
 
 Request* Host::get(std::string const& url)

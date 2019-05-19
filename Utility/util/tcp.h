@@ -6,11 +6,10 @@
 
 namespace TCP
 {
-	
-struct Socket
+
+class Socket : public Sockets::Socket
 {
-	static int const bufferSize = 1024;
-	
+public:
 	enum Error
 	{
 		ErrorNone,
@@ -20,59 +19,58 @@ struct Socket
 		ErrorDisconnect,
 		ErrorTimeout,
 	};
-	
+
 	struct ResumeSend
 	{
 		ResumeSend(Socket* sock_, char const* b_, char const* e_)
 		: sock(sock_), b(b_), e(e_), error(ErrorNone)
 		{
 		}
-		
+
 		Socket* sock;
 		char const* b;
 		char const* e;
 		Error error;
-		
+
 		bool resume();
 	};
-	
-	Socket(int s_, int timeOut_ = 10)
-	: s(s_), connected(false), connecting(true)
+
+	Socket(int family, int timeOut_ = 10)
+	: Sockets::Socket(family, SOCK_STREAM, 0)
+	, connected(false), connecting(true)
 	, error(ErrorNone), timeOut(timeOut_)
 	, dataBegin(0), dataEnd(0)
 	{
 		resetTimer();
 	}
-	
+
 	void checkTimeout()
 	{
 		if(time(0) > t + timeOut)
 			error = ErrorTimeout;
 	}
-	
+
 	void resetTimer()
 	{
 		t = time(0);
 	}
-	
+
 	bool think();
-	
+
 	bool readChunk();
-	
+
 	ResumeSend* send(char const* b, char const* e);
-	
+
 	ResumeSend* send(ResumeSend* r, char const* b, char const* e);
-	
+
 	bool trySend(char const*& b, char const* e);
-	
+
 	Error getError() { return error; }
-	
+
 	~Socket();
-	
-	void close();
-	
+
 protected:
-	int s;
+	static int const bufferSize = 1024;
 	bool connected;
 	bool connecting;
 	char staticBuffer[bufferSize];

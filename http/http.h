@@ -25,8 +25,8 @@ struct Request : public TCP::Socket
 		Done,
 	};
 	
-	Request(int s_, std::string const& header_, std::string const& data_)
-	: TCP::Socket(s_), state(SendingData), outData(header_ + data_), success(false)
+	Request(int family, std::string const& header_, std::string const& data_)
+	: TCP::Socket(family), state(SendingData), outData(header_ + data_), success(false)
 	, concat(true), dataRecieved(0), dataLength(0), dataSender(0)
 	{
 	}

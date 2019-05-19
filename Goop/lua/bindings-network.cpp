@@ -35,8 +35,8 @@ LuaReference LuaGameEventMetaTable, LuaPlayerEventMetaTable, LuaWormEventMetaTab
 class LuaSocket : public TCP::Socket
 {
 public:
-	LuaSocket(int s_ /*LuaReference ref, int s_, LuaContext context_, LuaReference recvCallback_*/)
-	: TCP::Socket(s_, 10*60) //, context(context_), recvCallback(recvCallback_)
+	LuaSocket( /*LuaReference ref, int s_, LuaContext context_, LuaReference recvCallback_*/)
+	: TCP::Socket(10*60) //, context(context_), recvCallback(recvCallback_)
 	, dataSender(0) //, luaReference(ref)
 	{
 	}
@@ -133,17 +133,18 @@ int l_tcp_connect(lua_State* L)
 	if(!hp.get())
 		return 0;
 
-	int s;
-	if((s = Sockets::socketNonBlock()) < 0)
-		return 0;
-
-	if(!Sockets::connect(s, hp.get()))
-		return 0;
-
-	void* space = lua_newuserdata(context, sizeof(LuaSocket));
+	LuaSocket* socket = (LuaSocket*)lua_newuserdata(context, sizeof(LuaSocket));
 	//lua_pushvalue(context, -1);
 	//LuaSocket* sock = new (space) LuaSocket(context.createReference(), s, context, recvCallback);
-	new (space) LuaSocket(s);
+	new (socket) LuaSocket();
+
+	socket->socketNonBlock();
+	if(!socket->connect(hp.get()))
+	{
+		lua_pop(context, 1);
+		return 0;
+	}
+
 	context.push(SocketMetaTable);
 	lua_setmetatable(context, -2);
 

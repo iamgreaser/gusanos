@@ -1,65 +1,10 @@
+#include <cassert>
 #include <cstring>
 
 #include "util/sockets.h"
 
 namespace Sockets
 {
-
-char* copyCString(char* p)
-{
-	int l = strlen(p);
-	char* n = new char[l + 1];
-	memcpy(n, p, l + 1);
-	return n;
-}
-
-char* copyString(char* p, size_t l)
-{
-	char* n = new char[l + 1];
-	memcpy(n, p, l + 1);
-	return n;
-}
-
-char** copyList(char** p)
-{
-	int l = 0;
-	for(; p[l]; ++l)
-		/* nothing */;
-	
-	char** n = new char*[l + 1];
-	for(int i = 0; i < l; ++i)
-	{
-		n[i] = copyCString(p[i]);
-	}
-	
-	n[l] = 0;
-	
-	return n;
-}
-
-char** copyListL(char** p, size_t len)
-{
-	int l = 0;
-	for(; p[l]; ++l)
-		/* nothing */;
-	
-	char** n = new char*[l + 1];
-	for(int i = 0; i < l; ++i)
-	{
-		n[i] = copyString(p[i], len);
-	}
-	
-	n[l] = 0;
-	
-	return n;
-}
-
-void deleteList(char** p)
-{
-	for(int i = 0; p[i]; ++i)
-		delete[] p[i];
-	delete[] p;
-}
 
 Addrinfo::Addrinfo(addrinfo const* p)
 {
@@ -115,26 +60,25 @@ Addrinfo* resolveHost(std::string const& name, int const& port)
 	return result;
 }
 
-int socketNonBlock()
+Socket::Socket(int family, int socktype, int protocol)
 {
-	int s;
-	
-	if ((s = socket(PF_INET, SOCK_STREAM, 0)) < 0)
-		return -1;
+	s = socket(family, socktype, protocol);
+	assert(s >= 0);
+}
 
+void Socket::socketNonBlock(void)
+{
 #ifdef WINDOWS
 	unsigned long nonBlocking = 1;
 	ioctlsocket(s, FIONBIO, &nonBlocking);
 #else
 	fcntl(s, F_SETFL, O_NONBLOCK);
 #endif
-
-	return s;
 }
 
-bool connect(int s, Addrinfo* ai)
+bool Socket::connect(Addrinfo* ai)
 {
-	int r = connect(s, reinterpret_cast<sockaddr *>(ai->ai_addr), ai->ai_addrlen);
+	int r = ::connect(s, reinterpret_cast<sockaddr *>(ai->ai_addr), ai->ai_addrlen);
 
 	if(r == -1 &&
 #ifdef WINDOWS
@@ -145,6 +89,19 @@ bool connect(int s, Addrinfo* ai)
 		return false; // ERROR
 
 	return true;
+}
+
+void Socket::close(void)
+{
+	if(s)
+	{
+#ifdef WINDOWS
+		closesocket(s);
+#else
+		::close(s);
+#endif
+		s = 0;
+	}
 }
 
 }
