@@ -6,8 +6,8 @@
 #include "object/explosion.h"
 #include "object/exp_type.h"
 #ifndef DEDSERV
-#include "sound.h"
-#include "sound1d.h"
+#include "sfx/sound.h"
+#include "sfx/sound1d.h"
 #include "sprite_set.h"
 #endif
 #include "util/text.h"

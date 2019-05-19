@@ -10,7 +10,7 @@
 #include "gfx.h"
 #include "script.h"
 #ifndef DEDSERV
-#include "sound.h"
+#include "sfx/sound.h"
 #endif
 #include "object/part_type.h"
 #include "object/weapon_type.h"

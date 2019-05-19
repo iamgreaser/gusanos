@@ -23,9 +23,6 @@ Goop/parser.o \
 Goop/resource_base.o \
 Goop/resource_list.o \
 Goop/script.o \
-Goop/sfx.o \
-Goop/sound.o \
-Goop/sound1d.o \
 Goop/sprite.o \
 Goop/sprite_set.o \
 Goop/timer_event.o \
@@ -37,4 +34,5 @@ include Goop/loaders/objects.make
 include Goop/lua/objects.make
 include Goop/object/objects.make
 include Goop/player/objects.make
+include Goop/sfx/objects.make
 include Goop/worm/objects.make

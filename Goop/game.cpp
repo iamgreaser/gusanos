@@ -20,9 +20,9 @@
 #include "util/macros.h"
 #include "util/log.h"
 #ifndef DEDSERV
-#include "sfx.h"
-#include "sound.h"
-#include "sound1d.h"
+#include "sfx/sfx.h"
+#include "sfx/sound.h"
+#include "sfx/sound1d.h"
 #include "font.h"
 #include "menu.h"
 #include "input/keyboard.h"

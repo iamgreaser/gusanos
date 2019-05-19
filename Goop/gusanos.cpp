@@ -17,7 +17,7 @@
 #include "viewport.h"
 #include "font.h"
 #include "gfx.h"
-#include "sfx.h"
+#include "sfx/sfx.h"
 #include "menu.h"
 #include "distortion.h"
 #include "input/keyboard.h"

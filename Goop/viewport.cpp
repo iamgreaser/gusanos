@@ -3,7 +3,7 @@
 #include "viewport.h"
 
 #include "game.h"
-#include "sfx.h"
+#include "sfx/sfx.h"
 #include "gfx.h"
 #include <allegro.h>
 #include "worm/base_worm.h"
